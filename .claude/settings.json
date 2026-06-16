@@ -1,0 +1,46 @@
+{
+  "permissions": {
+    "allow": [
+      "bash:flutter pub get",
+      "bash:flutter pub upgrade",
+      "bash:flutter analyze",
+      "bash:flutter test",
+      "bash:dart format .",
+      "bash:dart format lib/",
+      "bash:flutter pub run build_runner build",
+      "bash:flutter pub run build_runner watch",
+      "bash:flutter pub run build_runner build --delete-conflicting-outputs",
+      "bash:flutter pub run build_runner watch --delete-conflicting-outputs",
+      "bash:flutter clean",
+      "bash:git status",
+      "bash:git diff",
+      "bash:git log",
+      "bash:git branch",
+      "bash:find lib -name '*.dart'",
+      "bash:grep -r",
+      "bash:ls -la",
+      "bash:cat"
+    ]
+  },
+  "preferences": {
+    "codeStyle": {
+      "description": "代码风格偏好",
+      "rules": [
+        "使用最简洁的实现，避免冗余代码",
+        "优先使用 Freezed 定义数据类",
+        "Repository 必须先定义接口再实现",
+        "避免在 Widget 中直接写业务逻辑",
+        "Provider 使用代码生成方式（@riverpod）"
+      ]
+    },
+    "architecture": {
+      "description": "架构约束",
+      "rules": [
+        "严格遵循 Clean Architecture 三层分离",
+        "Domain 层不能导入 Data 和 Presentation",
+        "Data 层不能导入 Presentation",
+        "使用 Feature-first 组织代码"
+      ]
+    }
+  }
+}
