@@ -156,34 +156,39 @@ flutter clean
 本项目已配置 `.claude/settings.json`，包含：
 
 - **自动权限许可**: 常用命令（`flutter pub get`, `flutter analyze`, `build_runner` 等）无需手动确认
-- **提交前检查 Hook**: 当你说"提交"或"commit"时，自动运行代码格式化和静态分析
 - **架构约束规则**: 强制执行 Clean Architecture 分层依赖规则
 
 ### 可用 Skills
 
 #### `/gen-feature <feature_name>`
 
-快速生成完整的 Clean Architecture Feature 脚手架
+快速生成完整的 Clean Architecture Feature 脚手架。
+
+**使用方式：**
+```bash
+/gen-feature user     # 生成 user 模块
+/gen-feature auth     # 生成 auth 模块
+```
+
+或自然语言调用：
+```
+生成一个 product 模块
+帮我创建一个 order feature
+```
 
 **生成内容：**
 - Domain Layer: Entity + Repository Interface
 - Data Layer: Model + API + Repository Implementation
 - Presentation Layer: Provider + Page
 
-**示例：**
+**生成后操作：**
 ```bash
-/gen-feature user
-# 自动生成：
-# - lib/domain/entities/user_entity.dart
-# - lib/domain/repositories/user_repository.dart
-# - lib/data/models/user_model.dart
-# - lib/data/datasources/remote/user_api.dart
-# - lib/data/repositories/user_repository_impl.dart
-# - lib/presentation/providers/user_provider.dart
-# - lib/presentation/pages/user_page.dart
-```
+# 运行代码生成
+flutter pub run build_runner build --delete-conflicting-outputs
 
-**注意**: 生成后需要运行 `flutter pub run build_runner build --delete-conflicting-outputs`
+# 如需错误处理，安装 dartz
+flutter pub add dartz
+```
 
 ### 代码质量检查
 
