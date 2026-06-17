@@ -1,6 +1,6 @@
 # Flyguy 项目
 
-基于 **实用型 MVVM (Plan B)** 架构的 Flutter 项目
+基于 **实用型 MVVM** 架构的 Flutter 项目
 
 ## 快速开始
 
@@ -47,9 +47,70 @@ lib/
 
 ## 开发工具
 
-### AI 辅助 Skills
+### AI 辅助 Skills（需要 Claude Code）
 
-- `/gen-feature <name>` - 快速生成 Feature 脚手架
+本项目配置了 3 个 AI 代码生成工具，可大幅提升开发效率：
+
+#### 1. `/gen-module <name>` - 生成完整模块
+
+一键生成 API + Repository + Model + Page + Provider
+
+```bash
+/gen-module auth      # 生成认证模块
+/gen-module user      # 生成用户模块
+/gen-module product   # 生成商品模块
+```
+
+**生成文件**：
+- `lib/api/{name}_api.dart`
+- `lib/repositories/{name}_repository.dart`
+- `lib/models/{name}/{name}_model.dart`
+- `lib/pages/{name}/{name}_page.dart`
+- `lib/pages/{name}/providers/{name}_provider.dart`
+
+**使用场景**：创建新功能模块时使用，节省 80% 样板代码编写时间
+
+---
+
+#### 2. `/gen-model <name>` - 从 JSON 生成模型
+
+自动将 JSON 转换为 Freezed 数据模型
+
+```bash
+/gen-model user
+
+# 然后粘贴 JSON：
+{
+  "id": "123",
+  "name": "John",
+  "email": "john@example.com"
+}
+```
+
+**生成文件**：`lib/models/{name}/{name}_model.dart`
+
+**使用场景**：对接后端 API 时，快速生成类型安全的数据模型
+
+---
+
+#### 3. `/add-interceptor <type>` - 添加拦截器
+
+快速添加常用的 Dio 拦截器
+
+```bash
+/add-interceptor token    # JWT Token 自动注入
+/add-interceptor refresh  # Token 过期自动刷新
+/add-interceptor retry    # 网络失败自动重试
+/add-interceptor error    # 统一错误处理
+```
+
+**生成位置**：`lib/core/dio/interceptors/`
+
+**使用场景**：配置网络层中间件
+
+---
+
+**注意**：使用 Skills 需要安装 [Claude Code CLI](https://docs.anthropic.com/claude/docs/claude-code) 或使用 VS Code 的 Claude 插件。
 
 ### 常用命令
 
