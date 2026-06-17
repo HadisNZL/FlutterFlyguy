@@ -1,6 +1,6 @@
 # Flyguy 项目
 
-Flutter Clean Architecture 示例项目
+基于 **实用型 MVVM (Plan B)** 架构的 Flutter 项目
 
 ## 快速开始
 
@@ -12,21 +12,32 @@ flutter pub get
 flutter run
 
 # 代码生成（开发时推荐）
-flutter pub run build_runner watch --delete-conflicting-outputs
+dart run build_runner watch --delete-conflicting-outputs
 ```
 
 ## 架构说明
 
-本项目采用 **Clean Architecture（整洁架构）** 设计，详细规范请查看 [CLAUDE.md](CLAUDE.md)
+本项目采用 **实用型 MVVM** 架构，详细规范请查看 [CLAUDE.md](CLAUDE.md)
+
+### 核心理念
+- ✅ 极简实用，拒绝过度设计
+- ✅ 按业务模块组织代码
+- ✅ 使用 Riverpod AsyncValue 统一处理异步状态
+- ❌ 不使用抽象接口和 Dartz
 
 ### 目录结构
 
 ```
 lib/
-├── core/          # 全局配置（网络、主题、常量）
-├── data/          # 数据层（API、模型、Repository 实现）
-├── domain/        # 领域层（实体、Repository 接口）
-└── presentation/  # 展示层（Provider、页面、组件）
+├── core/          # 全局配置
+│   ├── dio/       # Dio 实例与拦截器
+│   ├── constants/ # 全局常量
+│   └── theme/     # 主题配置
+├── api/           # API 接口层（Dio 直接实现）
+├── repositories/  # 数据聚合层（整合网络与缓存）
+├── models/        # Freezed 数据模型
+├── pages/         # 页面（按模块分包）
+└── widgets/       # 通用组件
 ```
 
 ## 开发工具
@@ -38,6 +49,9 @@ lib/
 ### 常用命令
 
 ```bash
+# 代码生成
+dart run build_runner build --delete-conflicting-outputs
+
 # 代码格式化
 dart format .
 
@@ -53,15 +67,19 @@ flutter clean
 
 ## 技术栈
 
-- 状态管理: `flutter_riverpod`
-- 网络请求: `dio` + `retrofit`
-- 数据模型: `freezed` + `json_serializable`
-- 本地存储: `hive`
-- 路由导航: `go_router`
+| 技术领域 | 使用方案 |
+|---------|---------|
+| 状态管理 | `flutter_riverpod` + `@riverpod` |
+| 网络请求 | `dio` |
+| 数据模型 | `freezed` + `json_serializable` |
+| 本地存储 | `hive` + `hive_flutter` |
+| 路由导航 | `go_router` |
+| 日志工具 | `logger` + `pretty_dio_logger` |
 
-## 贡献指南
+## 开发规范
 
-1. 所有数据模型使用 `freezed`
-2. Repository 先定义接口再实现
-3. 提交前运行 `flutter analyze`
-4. 遵循 Feature-first 组织原则
+1. 所有数据模型使用 `freezed` + `json_serializable`
+2. Repository 直接写实现类，不要抽象接口
+3. 使用 `AsyncValue` 处理异步状态，不使用 `Either`
+4. 提交前运行 `flutter analyze`
+5. 遵循 YAGNI 原则，不做过度设计
