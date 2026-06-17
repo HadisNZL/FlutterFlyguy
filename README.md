@@ -29,15 +29,20 @@ dart run build_runner watch --delete-conflicting-outputs
 
 ```
 lib/
-├── core/          # 全局配置
-│   ├── dio/       # Dio 实例与拦截器
-│   ├── constants/ # 全局常量
-│   └── theme/     # 主题配置
-├── api/           # API 接口层（Dio 直接实现）
-├── repositories/  # 数据聚合层（整合网络与缓存）
-├── models/        # Freezed 数据模型
-├── pages/         # 页面（按模块分包）
-└── widgets/       # 通用组件
+├── core/              # 全局配置
+│   ├── dio/           # Dio 实例与拦截器
+│   │   ├── dio_client.dart
+│   │   └── interceptors/
+│   ├── storage/       # 本地缓存工具
+│   ├── constants/     # 全局常量
+│   ├── extensions/    # 扩展方法
+│   └── utils/         # 工具函数
+├── api/               # API 接口层（Dio 直接实现）
+├── repositories/      # 数据聚合层（只有实现类）
+├── models/            # Freezed 数据模型（按模块分包）
+├── pages/             # 页面（按模块分包）
+├── widgets/           # 通用组件
+└── main.dart          # 应用入口
 ```
 
 ## 开发工具

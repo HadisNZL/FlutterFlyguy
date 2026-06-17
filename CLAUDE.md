@@ -21,19 +21,23 @@
 
 严禁随意发明或创建新的根级目录，所有代码必须归入以下明确定义的层级中：
 
-- `core/`：全局基础支撑能力
-  - `dio/`：Dio 全局实例、拦截器（Token注入、日志、统一错误处理）
-    - `dio_client.dart`：全局 Dio 实例配置（baseUrl、超时、拦截器）
-    - `interceptors/`：自定义拦截器目录
-  - `storage/`：本地缓存工具封装（SharedPreferences / Isar 等）
-  - `constants/`：全局常量（颜色、尺寸、接口地址枚举）
-  - `extensions/`：通用扩展方法（String, DateTime 等）
-  - `utils/`：无状态的纯工具函数（如格式化、Toast等）
-- `api/`：纯网络请求接口层。**使用 Dio 直接实现，每个 API 类封装相关接口**
-- `repositories/`：**数据源聚合层**。负责整合网络与缓存数据
-- `models/`：**唯一的数据实体层**
-- `pages/`：视图页面层。按业务模块分包（如 `pages/auth/`, `pages/user/`）
-- `widgets/`：全局高频复用的基础小组件（如骨架屏、统一错误页）
+```
+lib/
+├── core/                   # 全局基础支撑能力
+│   ├── dio/                # Dio 全局实例、拦截器
+│   │   ├── dio_client.dart # 全局 Dio 实例配置
+│   │   └── interceptors/   # 自定义拦截器（Token、日志、错误）
+│   ├── storage/            # 本地缓存工具封装（SharedPreferences / Isar）
+│   ├── constants/          # 全局常量（颜色、尺寸、接口地址枚举）
+│   ├── extensions/         # 通用扩展方法（String, DateTime 等）
+│   └── utils/              # 无状态的纯工具函数（如格式化、Toast等）
+├── api/                    # 纯网络请求接口层（Dio 直接实现）
+├── repositories/           # 数据聚合层（只有实现类，无抽象接口）
+├── models/                 # 唯一的数据实体层（按模块分包）
+├── pages/                  # 视图页面层（按业务模块分包）
+├── widgets/                # 全局高频复用的基础小组件
+└── main.dart               # 应用入口
+```
 
 ## 3. 各层级严格编程纪律
 
