@@ -23,7 +23,7 @@
 | 技术领域 | 使用方案 |
 |---------|---------|
 | 状态管理 | `flutter_riverpod` |
-| 网络请求 | `dio` + `retrofit` + `retrofit_generator` |
+| 网络请求 | `dio` |
 | 数据模型 | `freezed` + `json_serializable` |
 | 本地存储 | `hive` + `hive_flutter` |
 | 路由导航 | `go_router` |
@@ -40,7 +40,7 @@ lib/
 ├── data/                   # 数据层（实现细节）
 │   ├── models/             # 数据模型（DTOs，配合 json_serializable）
 │   ├── datasources/        # API 接口实现、本地数据库实现
-│   │   ├── remote/         # Retrofit API 接口
+│   │   ├── remote/         # Dio API 接口
 │   │   └── local/          # Hive 本地存储
 │   └── repositories/       # Repository 的具体实现
 ├── domain/                 # 领域层（纯业务逻辑）
@@ -91,14 +91,17 @@ lib/
 
 ### API 接口规范
 
-- **使用 Retrofit 定义 API 接口**
+- **使用 Dio 直接实现 API 接口**
   ```dart
-  @RestApi()
-  abstract class UserApi {
-    factory UserApi(Dio dio) = _UserApi;
+  class UserApi {
+    UserApi(this._dio);
     
-    @GET('/users/{id}')
-    Future<UserModel> getUser(@Path('id') String id);
+    final Dio _dio;
+    
+    Future<UserModel> getUser(String id) async {
+      final response = await _dio.get('/users/$id');
+      return UserModel.fromJson(response.data as Map<String, dynamic>);
+    }
   }
   ```
 

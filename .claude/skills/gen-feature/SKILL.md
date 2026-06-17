@@ -25,7 +25,7 @@ description: 快速生成 Clean Architecture Feature 脚手架。当用户想创
 
 ### Data Layer（数据层）
 - `lib/data/models/user_model.dart` - Freezed + JSON 数据模型
-- `lib/data/datasources/remote/user_api.dart` - Retrofit API 接口
+- `lib/data/datasources/remote/user_api.dart` - Dio API 接口
 - `lib/data/repositories/user_repository_impl.dart` - Repository 实现
 
 ### Presentation Layer（展示层）
@@ -81,20 +81,27 @@ class UserModel with _$UserModel {
 }
 ```
 
-### API (Retrofit)
+### API (Dio)
 ```dart
 import 'package:dio/dio.dart';
-import 'package:retrofit/retrofit.dart';
 import '../../models/user_model.dart';
 
-part 'user_api.g.dart';
+class UserApi {
+  UserApi(this._dio);
 
-@RestApi()
-abstract class UserApi {
-  factory UserApi(Dio dio, {String baseUrl}) = _UserApi;
+  final Dio _dio;
 
-  @GET('/users/{id}')
-  Future<UserModel> getUser(@Path('id') String id);
+  Future<UserModel> getUser(String id) async {
+    final response = await _dio.get('/users/$id');
+    return UserModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<List<UserModel>> getUsers() async {
+    final response = await _dio.get('/users');
+    return (response.data as List)
+        .map((json) => UserModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 }
 ```
 
@@ -196,3 +203,4 @@ flutter pub add dartz
 2. **依赖注入**：生成的 Provider 中需要手动注入 Repository 依赖
 3. **代码生成**：必须运行 build_runner 才能生成 `.g.dart` 和 `.freezed.dart` 文件
 4. **架构约束**：严格遵循 Clean Architecture 分层，Domain 层不依赖 Data 和 Presentation 层
+5. **网络请求**：使用 Dio 直接实现，无需额外的代码生成器
