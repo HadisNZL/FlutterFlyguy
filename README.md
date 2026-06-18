@@ -49,56 +49,92 @@ lib/
 
 ### AI 辅助 Skills（需要 Claude Code）
 
-本项目配置了 3 个 AI 代码生成工具，可大幅提升开发效率：
+本项目配置了 5 个 AI 代码生成工具，可大幅提升开发效率：
 
-#### 完整工作流示例
+#### 核心设计理念
+
+**灵活组合，按需生成**
+
+- 简单场景：用 `/gen-module` 一键生成完整模块
+- 复杂场景：用 `/gen-api` + `/gen-page` 灵活组合
+- 更新字段：用 `/gen-model` 快速更新
+
+---
+
+#### 工作流示例
+
+##### 场景 1：简单 CRUD 模块（1 Page = 1 API）
 
 ```bash
-# 1. 创建新模块（提供后端真实 JSON）
-/gen-module auth
-# 粘贴：{"access_token": "...", "expires_in": 123, ...}
+# 一键生成完整模块
+/gen-module user
+# 粘贴 JSON → 生成 API + Repository + Model + Page + Provider
+
+# 运行代码生成
+dart run build_runner build --delete-conflicting-outputs
+
+# 根据后端文档调整 API 接口
+# 编辑 lib/api/user_api.dart
+```
+
+##### 场景 2：复杂页面（1 Page = 多个 API）
+
+```bash
+# 1. 分别生成多个数据层
+/gen-api user
+/gen-api order
+/gen-api address
 
 # 2. 运行代码生成
 dart run build_runner build --delete-conflicting-outputs
 
-# 3. 根据后端文档调整 API 接口
-# 编辑 lib/api/auth_api.dart，修改路径、参数、响应解析
+# 3. 生成组合页面
+/gen-page profile
+# 选择：需要状态管理
+# 生成的 Provider 包含详细注释，指导如何组合多个 Repository
 
-# 4. 测试功能
-flutter run
+# 4. 根据注释填充业务逻辑
+# 编辑 lib/pages/profile/providers/profile_provider.dart
+```
 
-# 5. 后期新增字段
-/gen-model auth
-# 粘贴新 JSON（包含新字段）
+##### 场景 3：纯 UI 页面（无接口）
 
-# 6. 重新生成代码
+```bash
+/gen-page about
+# 选择：不需要状态管理
+# 生成纯 StatelessWidget 页面
+```
+
+##### 场景 4：后期新增字段
+
+```bash
+/gen-model user
+# 粘贴包含新字段的完整 JSON
+# 只更新 Model，不影响其他文件
+
 dart run build_runner build --delete-conflicting-outputs
 ```
 
 ---
 
-#### 1. `/gen-module <name>` - 生成完整模块
+#### Skills 详解
+
+##### 1. `/gen-module <name>` - 生成完整模块
+
+**适用场景**：简单 CRUD，1 Page = 1 API
 
 一键生成 API + Repository + Model + Page + Provider
 
 ```bash
 /gen-module auth
-# AI 会询问：是否提供 JSON 定义？
-# 选择 1：直接回车 → 使用通用模板（id + name 字段）
-# 选择 2：粘贴 JSON → 根据实际数据结构生成对应字段
-```
-
-**示例（推荐方式）**：
-```bash
-/gen-module auth
-# 粘贴后端返回的真实 JSON：
+# AI 询问：是否提供 JSON 定义？
+# 粘贴后端真实 JSON（推荐）
 {
   "access_token": "abc123",
   "expires_in": 25920000,
   "token_type": "Bearer",
   "refresh_token": "xyz789"
 }
-# ✅ 一次生成，字段完全匹配
 ```
 
 **生成文件**：
@@ -109,40 +145,70 @@ dart run build_runner build --delete-conflicting-outputs
 - `lib/pages/{name}/providers/{name}_provider.dart` - Riverpod 状态管理
 
 **生成后必做**：
-1. **运行代码生成**：
-   ```bash
-   dart run build_runner build --delete-conflicting-outputs
-   ```
-
-2. **手动调整 API 接口**（根据后端文档）：
-   ```dart
-   // lib/api/auth_api.dart
-   Future<AuthModel> login(String username, String password) async {
-     final response = await _dio.post(
-       '/v1/user/login',  // ← 修改为真实路径
-       data: {
-         'account': username,  // ← 修改为后端要求的参数名
-         'pwd': password,
-       },
-     );
-     // 如果响应有外层包装（如 { "code": 200, "data": {...} }）
-     return AuthModel.fromJson(response.data['data']);
-     // 如果响应直接是数据，用：
-     // return AuthModel.fromJson(response.data);
-   }
-   ```
-
-**使用场景**：创建新功能模块时使用，节省 80% 样板代码编写时间
+1. 运行 `dart run build_runner build --delete-conflicting-outputs`
+2. 根据后端文档调整 API 方法（路径、参数、响应解析）
 
 ---
 
-#### 2. `/gen-model <name>` - 从 JSON 生成/更新模型
+##### 2. `/gen-api <name>` - 生成数据层
 
-自动将 JSON 转换为 Freezed 数据模型，支持**新增字段**
+**适用场景**：只要接口，不要页面 / 复杂页面组合多个接口
+
+只生成 API + Repository + Model
+
+```bash
+/gen-api product
+# AI 询问：是否提供 JSON 定义？
+# 粘贴 JSON 或回车使用通用模板
+```
+
+**生成文件**：
+- `lib/api/{name}_api.dart`
+- `lib/repositories/{name}_repository.dart`
+- `lib/models/{name}/{name}_model.dart`
+
+**使用场景**：
+- 全局配置接口、工具类接口
+- 复杂页面需要组合多个接口（先用 `/gen-api` 生成多个数据层，再用 `/gen-page` 生成页面）
+
+---
+
+##### 3. `/gen-page <name>` - 生成页面层
+
+**适用场景**：纯 UI 页面 / 复杂页面组合多个接口
+
+只生成 Page + Provider（可选）
+
+```bash
+/gen-page profile
+# AI 询问：需要状态管理吗？
+# yes → 生成 ConsumerWidget + Provider（带详细注释）
+# no  → 生成 StatelessWidget（纯 UI）
+```
+
+**生成文件**：
+- 需要状态管理：`lib/pages/{name}/{name}_page.dart` + `lib/pages/{name}/providers/{name}_provider.dart`
+- 纯 UI 页面：`lib/pages/{name}/{name}_page.dart`
+
+**Provider 模板注释包含**：
+- 场景 1：单一数据源（调用一个接口）
+- 场景 2：多个数据源并发加载（Future.wait）
+- 场景 3：多个数据源串行加载（有依赖关系）
+- 场景 4：带参数的页面（如 productId）
+- 聚合状态类：如何手动创建聚合多个数据的状态类
+
+---
+
+##### 4. `/gen-model <name>` - 从 JSON 生成/更新模型
+
+**适用场景**：新建模型 / 后期新增字段
+
+只生成 Model 文件
 
 ```bash
 /gen-model user
-# 然后粘贴 JSON：
+# AI 询问：是否提供 JSON 定义？
+# 粘贴 JSON
 {
   "id": "123",
   "name": "John",
@@ -153,21 +219,8 @@ dart run build_runner build --delete-conflicting-outputs
 **生成文件**：`lib/models/{name}/{name}_model.dart`
 
 **使用场景**：
-1. **新建模型** - 快速从 JSON 生成类型安全的数据模型
-2. **更新字段** - 后端 API 新增字段时，粘贴新 JSON 即可更新
-
-**示例：后期新增字段**
-```bash
-# 假设 auth_model.dart 已存在，后端新增了 user_id 字段
-/gen-model auth
-# 粘贴包含新字段的完整 JSON：
-{
-  "access_token": "...",
-  "expires_in": 123,
-  "user_id": "user_001"  // ← 新增字段
-}
-# ✅ 自动更新模型，添加 userId 字段
-```
+1. 新建模型 - 快速从 JSON 生成类型安全的数据模型
+2. 更新字段 - 后端 API 新增字段时，粘贴新 JSON 即可更新
 
 **注意**：
 - JSON 中的 `snake_case` 字段会自动添加 `@JsonKey` 映射为 `camelCase`
@@ -175,7 +228,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 ---
 
-#### 3. `/add-interceptor <type>` - 添加拦截器
+##### 5. `/add-interceptor <type>` - 添加拦截器
 
 快速添加常用的 Dio 拦截器
 
@@ -189,6 +242,24 @@ dart run build_runner build --delete-conflicting-outputs
 **生成位置**：`lib/core/dio/interceptors/`
 
 **使用场景**：配置网络层中间件
+
+---
+
+#### Skills 对比总结
+
+| Skill | 生成内容 | 适用场景 | 包含 Page |
+|-------|---------|---------|----------|
+| `/gen-module` | API + Repo + Model + Page + Provider | 简单 CRUD，1:1:1 关系 | ✅ |
+| `/gen-api` | API + Repo + Model | 只要数据层 / 多接口组合 | ❌ |
+| `/gen-page` | Page + Provider（可选） | 纯 UI / 组合多个接口 | ✅ |
+| `/gen-model` | Model | 新建/更新字段 | ❌ |
+| `/add-interceptor` | Dio 拦截器 | 网络中间件 | ❌ |
+
+**选择建议**：
+- 🎯 **简单场景**：用 `/gen-module` 一键生成
+- 🎯 **复杂页面**：用 `/gen-api` 分别生成数据层，再用 `/gen-page` 组合
+- 🎯 **纯 UI 页面**：直接用 `/gen-page`，选择不需要状态管理
+- 🎯 **更新字段**：用 `/gen-model`
 
 ---
 
