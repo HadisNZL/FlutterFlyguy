@@ -1,0 +1,8 @@
+# 全局共享状态 Provider
+
+此目录用于存放全局共享状态 Provider，如：
+- global_user_provider.dart - 用户信息（头像、昵称、登录态）
+- global_cart_provider.dart - 购物车数量
+- global_config_provider.dart - 应用配置（主题、语言）
+
+详见 CLAUDE.md 中的「3.1.1 全局共享状态 Provider」章节。

@@ -36,7 +36,12 @@ lib/
 ├── models/                 # 唯一的数据实体层（按模块分包）
 │   ├── user/               # 业务模型（如 user_model.dart）
 │   └── states/             # 聚合状态类（如 profile_state.dart，用于组合多个 Model）
+├── providers/              # Provider 层
+│   └── global/             # 全局共享状态 Provider（用户信息、购物车等）
 ├── pages/                  # 视图页面层（按业务模块分包）
+│   └── {module}/
+│       ├── {module}_page.dart
+│       └── providers/      # 页面级 Provider
 ├── widgets/                # 全局高频复用的基础小组件
 └── main.dart               # 应用入口
 ```
@@ -55,6 +60,107 @@ lib/
   - **并发加载**：多个接口无依赖关系，使用 `Future.wait()` 并行请求
   - **串行加载**：后续接口依赖前面接口的返回值，按顺序调用
   - **聚合状态**：如需组合多个 Model，手动创建聚合状态类（Freezed），而非在 Provider 中拼接临时 Map
+
+### 3.1.1 全局共享状态 Provider
+
+**何时需要全局 Provider？**
+
+当满足以下条件时，应创建全局共享状态 Provider：
+- ✅ 数据需要**跨多个页面**共享（如用户信息、购物车数量）
+- ✅ 一处修改，**多处自动刷新**（如修改头像后，首页、个人中心、侧边栏同时更新）
+- ✅ 数据具有**全局生命周期**（应用启动到退出期间持续存在）
+
+**典型的全局状态**：
+- 用户信息（头像、昵称、等级、登录态）
+- 购物车数量
+- 未读消息数
+- 应用配置（主题、语言）
+
+**目录结构**：
+```
+lib/
+└── providers/
+    └── global/                      # 全局 Provider 统一目录
+        ├── global_user_provider.dart
+        ├── global_cart_provider.dart
+        └── global_config_provider.dart
+```
+
+**代码示例**：
+```dart
+// lib/providers/global/global_user_provider.dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../models/user/user_model.dart';
+import '../../repositories/user_repository.dart';
+
+part 'global_user_provider.g.dart';
+
+@riverpod
+class GlobalUser extends _$GlobalUser {
+  @override
+  Future<UserModel?> build() async {
+    // 从本地缓存或远程接口加载
+    final cachedUser = await ref.read(storageProvider).getUser();
+    if (cachedUser != null) return cachedUser;
+    
+    try {
+      final user = await ref.read(userRepositoryProvider).getCurrentUser();
+      await ref.read(storageProvider).saveUser(user);
+      return user;
+    } catch (e) {
+      return null; // 未登录
+    }
+  }
+
+  // 业务方法：修改头像
+  Future<void> updateAvatar(String newAvatar) async {
+    await ref.read(userRepositoryProvider).updateAvatar(newAvatar);
+    ref.invalidateSelf(); // 刷新自己，触发所有 watch 的页面更新
+  }
+
+  // 业务方法：登出
+  Future<void> logout() async {
+    await ref.read(storageProvider).clearUser();
+    state = const AsyncValue.data(null);
+  }
+}
+```
+
+**使用方式**：
+```dart
+// 页面 A：个人中心
+class ProfilePage extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(globalUserProvider);
+    
+    return userAsync.when(
+      data: (user) => Text(user?.name ?? '未登录'),
+      loading: () => CircularProgressIndicator(),
+      error: (e, s) => Text('加载失败'),
+    );
+  }
+}
+
+// 页面 B：首页顶部
+class HomeHeader extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(globalUserProvider).value;
+    return CircleAvatar(backgroundImage: NetworkImage(user?.avatar ?? ''));
+  }
+}
+
+// 修改头像（任何页面）
+await ref.read(globalUserProvider.notifier).updateAvatar(newAvatar);
+// ✅ 所有 watch globalUserProvider 的页面自动刷新
+```
+
+**核心原则**：
+- ❌ 不要为每个页面都创建全局 Provider
+- ❌ 不要把页面级的状态提升为全局状态
+- ✅ 只为真正需要跨页面共享的数据创建全局 Provider
+- ✅ 全局 Provider 数量应控制在 3-5 个以内
 
 ### 3.2 数据聚合层 (Repositories)
 - **角色**：核心业务逻辑承载者，对接 `api` 和 `storage`
