@@ -302,3 +302,47 @@ flutter clean
 3. 使用 `AsyncValue` 处理异步状态，不使用 `Either`
 4. 提交前运行 `flutter analyze`
 5. 遵循 YAGNI 原则，不做过度设计
+
+## 全局共享状态
+
+### 何时需要全局 Provider？
+
+当数据需要**跨多个页面共享**，且**一处修改、多处自动刷新**时，创建全局 Provider。
+
+**典型场景**：
+- 用户信息（修改头像后，首页、个人中心、侧边栏同时更新）
+- 购物车数量（加入购物车后，商品详情页、首页角标同时更新）
+- 未读消息数
+- 应用配置（主题、语言）
+
+### 使用方式
+
+```dart
+// 1. 创建全局 Provider（lib/providers/global/）
+@riverpod
+class GlobalUser extends _$GlobalUser {
+  @override
+  Future<UserModel?> build() async {
+    return await ref.read(userRepositoryProvider).getCurrentUser();
+  }
+
+  Future<void> updateAvatar(String newAvatar) async {
+    await ref.read(userRepositoryProvider).updateAvatar(newAvatar);
+    ref.invalidateSelf(); // 刷新自己
+  }
+}
+
+// 2. 多个页面 watch 全局 Provider
+// 页面 A：个人中心
+final user = ref.watch(globalUserProvider);
+
+// 页面 B：首页顶部
+final user = ref.watch(globalUserProvider);
+
+// 3. 修改数据（任何页面）
+await ref.read(globalUserProvider.notifier).updateAvatar(newAvatar);
+// ✅ 所有 watch 的页面自动刷新
+```
+
+**详细说明**：查看 [CLAUDE.md - 3.1.1 全局共享状态 Provider](CLAUDE.md#311-全局共享状态-provider)
+
