@@ -14,6 +14,27 @@ description: 快速生成完整功能模块（API + Repository + Model + Page）
 /gen-module product   # 生成商品模块
 ```
 
+**执行流程**：
+1. 运行 `/gen-module <name>`
+2. AI 会询问：**是否提供 JSON 定义？**
+3. 你的选择：
+   - **直接回车** → 使用通用模板（id + name 字段）
+   - **粘贴 JSON** → 根据实际数据结构生成对应字段
+
+**示例**：
+```bash
+/gen-module auth
+# AI: 是否提供 JSON 定义？（回车跳过使用通用模板）
+# 你粘贴：
+{
+  "access_token": "...",
+  "expires_in": 123,
+  "token_type": "Bearer",
+  "refresh_token": "..."
+}
+# ✅ 一次生成，字段完全匹配
+```
+
 ## 生成的文件结构
 
 以 `auth` 为例，将生成：
@@ -171,6 +192,18 @@ dart run build_runner build --delete-conflicting-outputs
 ## 注意事项
 
 - 命名使用 `snake_case`（文件名）和 `PascalCase`（类名）
-- Model 字段需要根据实际 API 响应调整
+- **推荐提供 JSON**：可一次生成正确字段，避免后续修改
+- 若使用通用模板，后续可用 `/gen-model <name>` 更新 Model 字段
 - Provider 使用 `@riverpod` 代码生成
 - Repository 只是实现类，没有抽象接口
+
+## 与 /gen-model 的区别
+
+| Skill | 用途 | 生成内容 |
+|-------|------|---------|
+| `/gen-module` | 创建完整模块 | API + Repository + Model + Page + Provider |
+| `/gen-model` | 只更新数据模型 | Model（根据 JSON 更新字段）|
+
+**最佳实践**：
+- 新建模块时：用 `/gen-module`（可选提供 JSON）
+- 字段调整时：用 `/gen-model`（只改 Model）
