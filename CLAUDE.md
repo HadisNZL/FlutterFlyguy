@@ -34,6 +34,8 @@ lib/
 ├── api/                    # 纯网络请求接口层（Dio 直接实现）
 ├── repositories/           # 数据聚合层（只有实现类，无抽象接口）
 ├── models/                 # 唯一的数据实体层（按模块分包）
+│   ├── user/               # 业务模型（如 user_model.dart）
+│   └── states/             # 聚合状态类（如 profile_state.dart，用于组合多个 Model）
 ├── pages/                  # 视图页面层（按业务模块分包）
 ├── widgets/                # 全局高频复用的基础小组件
 └── main.dart               # 应用入口
@@ -47,7 +49,12 @@ lib/
   - 严禁引入 `dartz` 或自定义 `Either`。必须**原生且唯一**地使用 Riverpod 的 `AsyncValue` 来处理异步网络状态
   - 优先使用 `@riverpod` 代码生成器语法来定义 Provider
   - Provider 文件统一放在对应页面的同级 `providers/` 目录
-  - Provider 只负责"调用 Repository -> 抛出 State给 UI"，不要在 Provider 内写繁琐的 JSON 字段拼接
+  - Provider 只负责"调用 Repository -> 抛出 State 给 UI"，不要在 Provider 内写繁琐的 JSON 字段拼接
+- **数据加载模式**：
+  - **单一数据源**：直接调用一个 Repository 方法
+  - **并发加载**：多个接口无依赖关系，使用 `Future.wait()` 并行请求
+  - **串行加载**：后续接口依赖前面接口的返回值，按顺序调用
+  - **聚合状态**：如需组合多个 Model，手动创建聚合状态类（Freezed），而非在 Provider 中拼接临时 Map
 
 ### 3.2 数据聚合层 (Repositories)
 - **角色**：核心业务逻辑承载者，对接 `api` 和 `storage`
@@ -59,6 +66,7 @@ lib/
   - 数据脱敏、默认值兜底、格式化转换
   - 持久化处理（如：获取远端数据后同步写入本地数据库）
 - **粒度**：按**业务领域（Domain）**划分，而不是按接口划分。例如 `AuthRepository`（负责登录/注册/登出），而不是按单个接口拆分
+- **聚合状态类**：当 Provider 需要组合多个 Repository 的数据时，在 `models/states/` 目录下创建聚合状态类（Freezed），而非在 Provider 中返回 Map 或动态类型
 
 ### 3.3 数据模型层 (Models)
 - **铁律：一套 Freezed 走天下**。严禁将模型强行拆分为 DTO 和 Entity 两层
@@ -98,6 +106,70 @@ dart run build_runner build --delete-conflicting-outputs
 ```
 
 ## 6. 架构取舍备忘录（AI 决策参考）
+
+### 6.1 标准开发路径
 - **默认路径**：优先走 `Api -> Repo -> Provider -> UI` 的标准链路
 - **极简降级**：如果确信某个单接口既无本地缓存要求，也不存在任何跨页面数据复用，允许极其轻量的直连（但为了统一性，依然建议封装入 Repo）
 - **禁止过度设计**：不要为了"未来可能的扩展"而提前抽象，遵循 YAGNI 原则（You Aren't Gonna Need It）
+
+### 6.2 代码生成工具使用指南
+
+本项目提供 AI 辅助的代码生成工具（Skills），根据场景灵活选择：
+
+#### 简单场景：一键生成完整模块
+```bash
+/gen-module user
+# 适用于：标准 CRUD，1 Page = 1 API
+# 生成：API + Repository + Model + Page + Provider
+```
+
+#### 复杂场景：灵活组合生成
+```bash
+# 步骤 1：分别生成多个数据层
+/gen-api user
+/gen-api order
+/gen-api address
+
+# 步骤 2：生成组合页面
+/gen-page profile
+# 选择：需要状态管理
+# 生成的 Provider 模板包含详细注释，指导如何组合多个 Repository
+```
+
+#### 纯 UI 场景：无需数据层
+```bash
+/gen-page about
+# 选择：不需要状态管理
+# 生成：纯 StatelessWidget 页面
+```
+
+#### 后期维护：更新字段
+```bash
+/gen-model user
+# 粘贴包含新字段的完整 JSON
+# 只更新 Model，不影响其他文件
+```
+
+#### API 层响应解析规范
+- 生成的 API 方法是**通用模板**，需根据后端文档手动调整：
+  - 接口路径（如 `/v1/user/login`）
+  - 请求参数名（如 `account` vs `username`）
+  - 响应解析（如是否有外层 `{ "code": 200, "data": {...} }` 包装）
+- 示例：
+  ```dart
+  // 后端返回：{ "code": 200, "data": { "id": "123", ... } }
+  return UserModel.fromJson(response.data['data']);
+  
+  // 后端直接返回：{ "id": "123", ... }
+  return UserModel.fromJson(response.data);
+  ```
+
+### 6.3 决策矩阵
+
+| 场景 | 推荐工具 | 原因 |
+|------|---------|------|
+| 简单 CRUD（1:1:1） | `/gen-module` | 一键生成，节省时间 |
+| 复杂页面（1 Page = 多 API） | `/gen-api` + `/gen-page` | 灵活组合，避免冗余 |
+| 纯静态页面 | `/gen-page` (无状态) | 无需 Provider |
+| 后期新增字段 | `/gen-model` | 只更新 Model |
+| 需要聚合状态 | 手动创建 Freezed 类 | 类型安全，避免动态类型 |
