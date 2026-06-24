@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 允许调试时信任用户安装的证书（用于 Charles 抓包）-->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- 信任系统证书 -->
+            <certificates src="system" />
+            <!-- 信任用户安装的证书（Charles 证书）-->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

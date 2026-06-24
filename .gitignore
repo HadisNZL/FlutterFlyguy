@@ -18,8 +18,11 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# VS Code
-.vscode/
+# VS Code (保留 launch.json 和 settings.json，忽略个人配置)
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # Flutter/Dart/Pub related
 **/doc/api/
