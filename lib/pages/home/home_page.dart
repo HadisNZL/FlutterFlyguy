@@ -45,16 +45,22 @@ class HomePage extends StatelessWidget {
           SizedBox(height: MediaQuery.of(context).padding.top),
           SizedBox(
             height: 56,
-            child: Row(
+            child: Stack(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.black),
-                  onPressed: () {},
+                // 左侧菜单按钮
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.black),
+                    onPressed: () {},
+                  ),
                 ),
-                const Expanded(
+                // 中间标题（绝对居中）
+                const Center(
                   child: Text(
                     'diviner',
-                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18,
@@ -62,11 +68,16 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(right: 15),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Image.asset('assets/images/btn_911.png'),
+                // 右侧 911 按钮
+                Positioned(
+                  right: 15,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Image.asset('assets/images/btn_911.png'),
+                    ),
                   ),
                 ),
               ],

@@ -3,9 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'core/constants/colors.dart';
+import 'core/exceptions/business_exceptions.dart';
+import 'core/handlers/global_error_handler_registry.dart';
 import 'core/router/app_router.dart';
 import 'models/auth/token_model.dart';
+import 'providers/global/global_error_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +49,14 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+
+    // 全局监听业务错误
+    ref.listen<Exception?>(globalErrorProvider, (prev, next) {
+      if (next != null && next is GlobalHandledException) {
+        GlobalErrorHandlerRegistry.handle(context, ref, next);
+        ref.read(globalErrorProvider.notifier).clear();
+      }
+    });
 
     return MaterialApp.router(
       title: 'Diviner',

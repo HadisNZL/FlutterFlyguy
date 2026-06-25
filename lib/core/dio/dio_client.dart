@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../constants/api_config.dart';
@@ -17,11 +18,12 @@ class DioClient {
   }
 
   /// 创建业务服务的 Dio 实例
-  static Dio createBusiness({TokenStorage? tokenStorage}) {
+  static Dio createBusiness({required Ref ref, TokenStorage? tokenStorage}) {
     return _create(
       baseUrl: ApiConfig.businessBaseUrl,
       tokenStorage: tokenStorage,
       isBusinessApi: true,
+      ref: ref,
     );
   }
 
@@ -30,6 +32,7 @@ class DioClient {
     required String baseUrl,
     TokenStorage? tokenStorage,
     bool isBusinessApi = false,
+    Ref? ref,
   }) {
     final dio = Dio(
       BaseOptions(
@@ -63,8 +66,8 @@ class DioClient {
     }
 
     // 业务接口添加业务响应拦截器（统一处理 IsSuccess、ErrorCode）
-    if (isBusinessApi) {
-      dio.interceptors.add(BusinessResponseInterceptor());
+    if (isBusinessApi && ref != null) {
+      dio.interceptors.add(BusinessResponseInterceptor(ref));
     }
 
     // 根据环境配置启用日志

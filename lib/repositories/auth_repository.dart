@@ -76,10 +76,17 @@ class AuthRepository {
   /// 退出登录
   /// 调用业务接口退出 + 清除本地 Token
   Future<void> logout() async {
-    // 调用业务接口退出登录
-    await _businessApi.logout();
+    try {
+      // 调用业务接口退出登录
+      await _businessApi.logout();
+    } catch (e) {
+      // 退出接口失败也无所谓，本地清除即可
+      // 1. 如果是 74015：说明 Token 已失效，正好清除本地
+      // 2. 如果是网络错误：也不影响，本地清除即可
+      // 3. 如果是其他错误：也不重要，反正要退出了
+    }
 
-    // 清除本地 Token
+    // 无论接口成功失败，都清除本地 Token
     await _storage.clearToken();
   }
 

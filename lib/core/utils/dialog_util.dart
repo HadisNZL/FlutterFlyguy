@@ -5,6 +5,44 @@ import 'package:flutter/material.dart';
 
 /// 对话框工具类
 class DialogUtil {
+  /// 显示提示对话框（单按钮）
+  static Future<void> showAlert(
+    BuildContext context, {
+    required String title,
+    required String content,
+    String? buttonText,
+  }) {
+    if (Platform.isIOS) {
+      return showCupertinoDialog<void>(
+        context: context,
+        builder: (context) => CupertinoAlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(buttonText ?? '确定'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(buttonText ?? '确定'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   /// 显示确认对话框（平台自适应）
   static Future<bool?> showConfirm(
     BuildContext context, {

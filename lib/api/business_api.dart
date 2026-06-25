@@ -7,6 +7,7 @@ import '../core/storage/token_storage.dart';
 
 final businessApiProvider = Provider<BusinessApi>((ref) {
   final dio = DioClient.createBusiness(
+    ref: ref,
     tokenStorage: ref.watch(tokenStorageProvider),
   );
   return BusinessApi(dio);
