@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../core/exceptions/business_exceptions.dart';
 import '../../core/storage/login_init_storage.dart';
 import '../../core/storage/token_storage.dart';
 import '../../models/login_init/login_init_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/login_init_repository.dart';
+import 'global_error_provider.dart';
 
 part 'global_auth_provider.g.dart';
 
@@ -32,7 +35,9 @@ class GlobalAuth extends _$GlobalAuth {
     required String deviceUuid,
     required String deviceInfo,
   }) async {
-    await ref.read(authRepositoryProvider).login(
+    await ref
+        .read(authRepositoryProvider)
+        .login(
           username: username,
           password: password,
           deviceUuid: deviceUuid,
@@ -76,7 +81,9 @@ class GlobalAuth extends _$GlobalAuth {
 
       // 更新 Token（关联 AccountId）
       if (token.accountId == null) {
-        final updatedToken = token.copyWith(accountId: data.accountInfo.accountId);
+        final updatedToken = token.copyWith(
+          accountId: data.accountInfo.accountId,
+        );
         await ref.read(tokenStorageProvider).saveToken(updatedToken);
       }
 
@@ -97,7 +104,16 @@ class GlobalAuth extends _$GlobalAuth {
       // 更新状态
       state = AsyncValue.data(data);
     } catch (e) {
-      // 静默失败，继续使用缓存
+      // 判断是否为特殊错误码（如 74015 账号冲突）
+      if (e is DioException && e.error is AccountConflictException) {
+        // 74015：清理本地数据并弹窗，不调用 logout 接口
+        await ref.read(loginInitStorageProvider).clearAll();
+        await ref.read(tokenStorageProvider).clearToken();
+        state = const AsyncValue.data(null);
+        ref.read(globalErrorProvider.notifier).notify(e.error as AccountConflictException);
+        return;
+      }
+      // 其他错误（网络超时、500 等）：静默失败，继续使用缓存
     }
   }
 

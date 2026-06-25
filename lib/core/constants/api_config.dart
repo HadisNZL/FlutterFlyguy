@@ -1,9 +1,5 @@
 /// 环境枚举
-enum Environment {
-  dev,
-  beta,
-  release,
-}
+enum Environment { dev, beta, release }
 
 /// API 环境配置
 class ApiConfig {
@@ -50,9 +46,9 @@ class ApiConfig {
   static Duration get connectTimeout {
     switch (environment) {
       case Environment.dev:
-        return const Duration(seconds: 60); // 开发环境长一点，方便调试
+        return const Duration(seconds: 20); // 开发环境长一点，方便调试
       case Environment.beta:
-        return const Duration(seconds: 30);
+        return const Duration(seconds: 20);
       case Environment.release:
         return const Duration(seconds: 15); // 生产环境短一点
     }
@@ -62,9 +58,9 @@ class ApiConfig {
   static Duration get receiveTimeout {
     switch (environment) {
       case Environment.dev:
-        return const Duration(seconds: 60);
+        return const Duration(seconds: 20);
       case Environment.beta:
-        return const Duration(seconds: 30);
+        return const Duration(seconds: 20);
       case Environment.release:
         return const Duration(seconds: 15);
     }
@@ -74,9 +70,9 @@ class ApiConfig {
   static Duration get sendTimeout {
     switch (environment) {
       case Environment.dev:
-        return const Duration(seconds: 60);
+        return const Duration(seconds: 20);
       case Environment.beta:
-        return const Duration(seconds: 30);
+        return const Duration(seconds: 20);
       case Environment.release:
         return const Duration(seconds: 15);
     }

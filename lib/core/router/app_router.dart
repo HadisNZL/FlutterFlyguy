@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -5,8 +6,11 @@ import '../../pages/auth/login_page.dart';
 import '../../pages/main/main_page.dart';
 import '../../pages/splash/splash_page.dart';
 
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/splash',
     routes: [
       GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
