@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class ProfilePage extends StatelessWidget {
+import '../../core/constants/colors.dart';
+import '../../core/utils/dialog_util.dart';
+import '../../core/utils/toast_util.dart';
+import '../../providers/global/global_auth_provider.dart';
+
+class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.colorWhite,
       body: SingleChildScrollView(
@@ -20,7 +26,7 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 16),
             _buildSettingsSection(),
             const SizedBox(height: 20),
-            _buildLogoutButton(),
+            _buildLogoutButton(context, ref),
             const SizedBox(height: 80),
           ],
         ),
@@ -380,29 +386,68 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton() {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () async {
+        // 显示确认对话框
+        final confirm = await DialogUtil.showConfirm(
+          context,
+          title: '退出登录',
+          content: '确定要退出登录吗？',
+        );
+
+        if (confirm != true) return;
+
+        // 显示 Loading
+        LoadingUtil.show();
+
+        try {
+          // 调用退出登录
+          await ref.read(globalAuthProvider.notifier).logout();
+
+          // 隐藏 Loading
+          LoadingUtil.dismiss();
+
+          // 清空路由栈并跳转到登录页
+          if (context.mounted) {
+            // 清空所有历史记录
+            while (context.canPop()) {
+              context.pop();
+            }
+            // 跳转到登录页（无法返回）
+            context.pushReplacement('/login');
+          }
+        } catch (e) {
+          // 隐藏 Loading
+          LoadingUtil.dismiss();
+
+          // 显示错误提示
+          ToastUtil.error(e.toString());
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: const Text(
+          '退出登录',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            color: AppColors.colorRed,
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
-      child: const Text(
-        '退出登录',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 16,
-          color: AppColors.colorRed,
-          fontWeight: FontWeight.w500,
         ),
       ),
     );

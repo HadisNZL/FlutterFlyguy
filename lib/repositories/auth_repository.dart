@@ -1,18 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/auth_api.dart';
+import '../api/business_api.dart';
 import '../core/storage/token_storage.dart';
 import '../models/auth/token_model.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(
     ref.watch(authApiProvider),
+    ref.watch(businessApiProvider),
     ref.watch(tokenStorageProvider),
   );
 });
 
 class AuthRepository {
-  AuthRepository(this._api, this._storage);
-  final AuthApi _api;
+  AuthRepository(this._authApi, this._businessApi, this._storage);
+  final AuthApi _authApi;
+  final BusinessApi _businessApi;
   final TokenStorage _storage;
 
   /// 用户登录
@@ -23,7 +26,7 @@ class AuthRepository {
     required String deviceUuid,
     required String deviceInfo,
   }) async {
-    final json = await _api.login(
+    final json = await _authApi.login(
       username: username,
       password: password,
       deviceUuid: deviceUuid,
@@ -53,7 +56,7 @@ class AuthRepository {
       throw Exception('本地无令牌，无法刷新');
     }
 
-    final json = await _api.refreshToken(currentToken.refreshToken);
+    final json = await _authApi.refreshToken(currentToken.refreshToken);
 
     // 构造新的 TokenModel
     final newToken = TokenModel(
@@ -70,12 +73,14 @@ class AuthRepository {
     return newToken;
   }
 
-  /// 登出
-  /// 注意：由于后端暂未提供登出接口，此方法仅清空本地令牌
-  /// 令牌在服务端仍然有效，直到自然过期
+  /// 退出登录
+  /// 调用业务接口退出 + 清除本地 Token
   Future<void> logout() async {
+    // 调用业务接口退出登录
+    await _businessApi.logout();
+
+    // 清除本地 Token
     await _storage.clearToken();
-    // TODO: 等待后端提供登出接口后，在这里调用 _api.logout()
   }
 
   /// 检查并刷新令牌（启动页调用）

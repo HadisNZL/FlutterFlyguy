@@ -13,9 +13,6 @@ class _AuthEndpoints {
 
   /// 登录 / 刷新令牌
   String get token => '/connect/token';
-
-  /// 登出
-  String get logout => '/connect/logout';
 }
 
 /// 业务接口路径
@@ -27,4 +24,7 @@ class _BusinessEndpoints {
 
   /// 获取用户信息
   String get userInfo => '/APP/GetUserInfo';
+
+  /// 退出登录
+  String get logout => '/APP/LogOut';
 }

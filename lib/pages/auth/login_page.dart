@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flyguy/core/utils/toast_util.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/utils/device_info_util.dart';
@@ -53,9 +54,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ToastUtil.error(message);
   }
 
   @override

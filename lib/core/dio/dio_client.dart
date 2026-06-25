@@ -8,6 +8,7 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../constants/api_config.dart';
 import '../storage/token_storage.dart';
 import 'interceptors/auth_interceptor.dart';
+import 'interceptors/business_response_interceptor.dart';
 
 class DioClient {
   /// 创建认证服务的 Dio 实例
@@ -20,11 +21,16 @@ class DioClient {
     return _create(
       baseUrl: ApiConfig.businessBaseUrl,
       tokenStorage: tokenStorage,
+      isBusinessApi: true,
     );
   }
 
   /// 内部统一创建方法
-  static Dio _create({required String baseUrl, TokenStorage? tokenStorage}) {
+  static Dio _create({
+    required String baseUrl,
+    TokenStorage? tokenStorage,
+    bool isBusinessApi = false,
+  }) {
     final dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -54,6 +60,11 @@ class DioClient {
     // 添加认证拦截器（自动添加所有必要的 Header）
     if (tokenStorage != null) {
       dio.interceptors.add(AuthInterceptor(tokenStorage));
+    }
+
+    // 业务接口添加业务响应拦截器（统一处理 IsSuccess、ErrorCode）
+    if (isBusinessApi) {
+      dio.interceptors.add(BusinessResponseInterceptor());
     }
 
     // 根据环境配置启用日志
