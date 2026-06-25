@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/constants/colors.dart';
 import '../../providers/global/global_auth_provider.dart';
 
@@ -20,22 +21,18 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
   Future<void> _initialize() async {
     try {
-      // 检查并刷新令牌
-      final isValid = await ref
+      final data = await ref
           .read(globalAuthProvider.notifier)
-          .checkAndRefresh();
+          .checkAndInitialize(useCache: true);
 
       if (!mounted) return;
 
-      if (isValid) {
-        // 令牌有效，跳转首页
-        context.go('/main');
-      } else {
-        // 令牌无效或不存在，跳转登录页
+      if (data == null) {
         context.go('/login');
+      } else {
+        context.go('/main');
       }
     } catch (e) {
-      // 发生错误，跳转登录页
       if (mounted) {
         context.go('/login');
       }

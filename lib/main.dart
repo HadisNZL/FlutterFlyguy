@@ -9,6 +9,8 @@ import 'core/exceptions/business_exceptions.dart';
 import 'core/handlers/global_error_handler_registry.dart';
 import 'core/router/app_router.dart';
 import 'models/auth/token_model.dart';
+import 'models/login_init/defense_area_model.dart';
+import 'models/login_init/login_init_model.dart';
 import 'providers/global/global_error_provider.dart';
 
 void main() async {
@@ -17,6 +19,15 @@ void main() async {
   // 初始化 Hive
   await Hive.initFlutter();
   Hive.registerAdapter(TokenModelAdapter());
+  Hive.registerAdapter(LoginInitModelAdapter());
+  Hive.registerAdapter(APPAccountInfoAdapter());
+  Hive.registerAdapter(SipInfoAdapter());
+  Hive.registerAdapter(DefenseAreaAdapter());
+  Hive.registerAdapter(AFAddressAdapter());
+  Hive.registerAdapter(PSTNAdapter());
+  Hive.registerAdapter(TimeZoneInfoAdapter());
+  Hive.registerAdapter(OEMAccountAdapter());
+  Hive.registerAdapter(AppSystemSettingAdapter());
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

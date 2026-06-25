@@ -13,6 +13,7 @@ class TokenModel with _$TokenModel {
     @HiveField(2) required String tokenType,
     @HiveField(3) required String refreshToken,
     @HiveField(4) required int loginTime,
+    @HiveField(5) int? accountId,
   }) = _TokenModel;
 
   const TokenModel._();

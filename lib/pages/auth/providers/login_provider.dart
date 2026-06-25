@@ -19,12 +19,16 @@ class Login extends _$Login {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
+      // 1. 登录获取 Token
       await ref.read(globalAuthProvider.notifier).login(
             username: username,
             password: password,
             deviceUuid: deviceUuid,
             deviceInfo: deviceInfo,
           );
+
+      // 2. 初始化数据（不使用缓存）
+      await ref.read(globalAuthProvider.notifier).initAfterLogin();
     });
   }
 }

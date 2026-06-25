@@ -22,9 +22,6 @@ class _BusinessEndpoints {
   /// 获取登录初始化信息
   String get loginInit => '/APP/GetAppLoginInitInfo';
 
-  /// 获取用户信息
-  String get userInfo => '/APP/GetUserInfo';
-
   /// 退出登录
   String get logout => '/APP/LogOut';
 }

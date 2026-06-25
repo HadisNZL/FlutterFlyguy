@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomePage extends StatelessWidget {
+import '../../core/constants/colors.dart';
+import '../../providers/global/global_auth_provider.dart';
+
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loginInitData = ref.watch(globalAuthProvider).value;
+    final areaName = loginInitData?.defenseAreaList.first.areaName ?? 'diviner';
+
     return Scaffold(
       backgroundColor: AppColors.colorWhite,
       body: Column(
         children: [
-          _buildHeaderWithModeSelector(context),
+          _buildHeaderWithModeSelector(context, areaName),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -32,7 +38,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderWithModeSelector(BuildContext context) {
+  Widget _buildHeaderWithModeSelector(BuildContext context, String areaName) {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -58,10 +64,10 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 // 中间标题（绝对居中）
-                const Center(
+                Center(
                   child: Text(
-                    'diviner',
-                    style: TextStyle(
+                    areaName,
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
