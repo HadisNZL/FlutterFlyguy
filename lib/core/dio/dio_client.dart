@@ -50,7 +50,7 @@ class DioClient {
 
         // Debug 模式下配置 Android 代理（用于 Charles 抓包）
         if (kDebugMode && Platform.isAndroid) {
-          client.findProxy = (uri) => 'PROXY 192.168.201.1:8888';
+          client.findProxy = (uri) => 'PROXY 192.168.200.218:8888';
         }
 
         // 允许不安全证书（HTTP 明文传输 + 自签名证书）

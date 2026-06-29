@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'core/constants/app_constants.dart';
 import 'core/constants/colors.dart';
 import 'core/exceptions/business_exceptions.dart';
 import 'core/handlers/global_error_handler_registry.dart';
@@ -28,6 +29,10 @@ void main() async {
   Hive.registerAdapter(TimeZoneInfoAdapter());
   Hive.registerAdapter(OEMAccountAdapter());
   Hive.registerAdapter(AppSystemSettingAdapter());
+
+  // 打开 Hive boxes（用于同步读取）
+  await Hive.openBox<TokenModel>(AppConstants.boxAuthToken);
+  await Hive.openBox<LoginInitModel>(AppConstants.boxLoginInit);
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

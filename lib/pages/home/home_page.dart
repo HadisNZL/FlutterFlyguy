@@ -9,8 +9,15 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loginInitData = ref.watch(globalAuthProvider).value;
+    // 直接读取数据（MainPage 已同步设置缓存）
+    final loginInitData = ref.watch(globalAuthProvider);
     final areaName = loginInitData?.defenseAreaList.first.areaName ?? 'diviner';
+
+    return _buildHomePage(context, areaName);
+  }
+
+  /// 构建首页正常内容
+  Widget _buildHomePage(BuildContext context, String areaName) {
 
     return Scaffold(
       backgroundColor: AppColors.colorWhite,

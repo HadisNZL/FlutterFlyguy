@@ -16,16 +16,15 @@ part 'global_auth_provider.g.dart';
 @riverpod
 class GlobalAuth extends _$GlobalAuth {
   @override
-  Future<LoginInitModel?> build() async {
-    // 只读取本地缓存，不发起请求
-    final token = await ref.read(tokenStorageProvider).getToken();
-    if (token == null || token.accountId == null) {
-      return null;
-    }
+  LoginInitModel? build() {
+    // 同步初始化，返回 null
+    // 实际数据由 MainPage 同步设置（从缓存读取）
+    return null;
+  }
 
-    return ref
-        .read(loginInitRepositoryProvider)
-        .getCachedLoginInit(token.accountId!);
+  /// 同步设置数据（供 MainPage 调用）
+  void setState(LoginInitModel data) {
+    state = data;
   }
 
   /// 用户登录
@@ -55,6 +54,14 @@ class GlobalAuth extends _$GlobalAuth {
   }
 
   /// 检查并初始化
+  /// useCache: 是否优先使用缓存
+  ///
+  /// 返回值：
+  /// - LoginInitModel: 成功获取数据
+  /// - null: 未登录或 token 过期
+  ///
+  /// 异常：
+  /// - 网络错误、超时等会抛出异常，由调用方处理
   Future<LoginInitModel?> checkAndInitialize({required bool useCache}) async {
     // 1. 检查 Token
     final token = await ref.read(tokenStorageProvider).getToken();
@@ -88,12 +95,22 @@ class GlobalAuth extends _$GlobalAuth {
       }
 
       // 更新状态
-      state = AsyncValue.data(data);
+      state = data;
       return data;
+    } on DioException catch (e) {
+      // 网络请求异常：细分处理
+      if (e.response?.statusCode == 401) {
+        // 401 Token 过期：清除登录状态
+        await logout();
+        state = null;
+        return null;
+      }
+
+      // 其他网络错误：静默失败，保持当前状态
+      rethrow;
     } catch (e) {
-      // 请求失败：清除 Token
-      await logout();
-      return null;
+      // 未知错误：静默失败
+      rethrow;
     }
   }
 
@@ -102,15 +119,17 @@ class GlobalAuth extends _$GlobalAuth {
     try {
       final data = await ref.read(loginInitRepositoryProvider).getLoginInit();
       // 更新状态
-      state = AsyncValue.data(data);
+      state = data;
     } catch (e) {
       // 判断是否为特殊错误码（如 74015 账号冲突）
       if (e is DioException && e.error is AccountConflictException) {
         // 74015：清理本地数据并弹窗，不调用 logout 接口
         await ref.read(loginInitStorageProvider).clearAll();
         await ref.read(tokenStorageProvider).clearToken();
-        state = const AsyncValue.data(null);
-        ref.read(globalErrorProvider.notifier).notify(e.error as AccountConflictException);
+        state = null;
+        ref
+            .read(globalErrorProvider.notifier)
+            .notify(e.error as AccountConflictException);
         return;
       }
       // 其他错误（网络超时、500 等）：静默失败，继续使用缓存
@@ -126,6 +145,6 @@ class GlobalAuth extends _$GlobalAuth {
     await ref.read(authRepositoryProvider).logout();
 
     // 更新状态
-    state = const AsyncValue.data(null);
+    state = null;
   }
 }

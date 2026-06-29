@@ -46,6 +46,105 @@ lib/
 └── main.dart               # 应用入口
 ```
 
+## 2.1 常量管理规范
+
+### 核心原则
+**所有硬编码的字符串常量必须集中管理在 `lib/core/constants/app_constants.dart`**
+
+### 必须统一管理的常量类型
+
+#### 路由相关
+- 路由路径（如 `/main`, `/login`）
+- 路由参数 key（如 `fromLogin`, `userId`）
+
+#### 存储相关
+- Hive Box 名称（如 `auth_token`, `login_init`）
+- 存储 Key 名称（如 `token`, `account_`）
+- 存储 Key 前缀（需要动态拼接的，如 `account_${id}`）
+
+#### 配置相关
+- API 基础 URL
+- 超时时间
+- 其他全局配置项
+
+### AppConstants 类结构
+
+```dart
+/// 应用全局常量
+/// 集中管理所有硬编码的字符串常量，便于维护和修改
+class AppConstants {
+  AppConstants._(); // 私有构造函数，防止实例化
+
+  /// ==================== 路由路径 ====================
+  static const String routeMain = '/main';
+  static const String routeLogin = '/login';
+
+  /// ==================== 路由参数 ====================
+  static const String extraFromLogin = 'fromLogin';
+
+  /// ==================== 存储 Box 名称 ====================
+  static const String boxAuthToken = 'auth_token';
+  static const String boxLoginInit = 'login_init';
+
+  /// ==================== 存储 Key ====================
+  static const String keyToken = 'token';
+  static const String keyLoginInitPrefix = 'account_';
+
+  /// 生成 LoginInit 存储的完整 key
+  static String loginInitKey(int accountId) => '${keyLoginInitPrefix}$accountId';
+}
+```
+
+### 使用规范
+
+#### ✅ 正确示例
+```dart
+// 路由跳转
+context.go(AppConstants.routeMain, extra: {AppConstants.extraFromLogin: true});
+
+// 存储操作
+final box = Hive.box<TokenModel>(AppConstants.boxAuthToken);
+await box.put(AppConstants.keyToken, token);
+
+// 动态 key
+final data = box.get(AppConstants.loginInitKey(accountId));
+```
+
+#### ❌ 错误示例
+```dart
+// 硬编码路由路径
+context.go('/main', extra: {'fromLogin': true});  // ❌
+
+// 硬编码 Box 名称
+final box = Hive.box<TokenModel>('auth_token');  // ❌
+
+// 硬编码 Key
+await box.put('token', token);  // ❌
+
+// 硬编码拼接
+final data = box.get('account_$accountId');  // ❌
+```
+
+### 新增常量的流程
+
+1. **在 `app_constants.dart` 中定义常量**
+   - 选择合适的分类（路由/存储/配置等）
+   - 添加清晰的注释说明用途
+
+2. **替换所有使用该常量的地方**
+   - 使用 IDE 全局搜索硬编码字符串
+   - 逐个替换为 `AppConstants.xxx`
+
+3. **验证编译通过**
+   - 确保没有遗漏的硬编码
+
+### 好处
+
+✅ **集中管理**：所有常量在一个文件中，便于查找和修改  
+✅ **类型安全**：通过静态常量避免拼写错误  
+✅ **易于维护**：修改常量只需改一个地方  
+✅ **可扩展**：未来添加新常量很容易
+
 ## 3. 各层级严格编程纪律
 
 ### 3.1 视图模型层 (Riverpod Providers)

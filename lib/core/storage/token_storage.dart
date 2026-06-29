@@ -1,12 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import '../../models/auth/token_model.dart';
+import '../constants/app_constants.dart';
 
 final tokenStorageProvider = Provider<TokenStorage>((ref) => TokenStorage());
 
 class TokenStorage {
-  static const String _boxName = 'auth_token';
-  static const String _tokenKey = 'token';
+  static const String _boxName = AppConstants.boxAuthToken;
+  static const String _tokenKey = AppConstants.keyToken;
 
   Box<TokenModel>? _box;
 

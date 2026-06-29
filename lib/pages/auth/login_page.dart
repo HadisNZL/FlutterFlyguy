@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flyguy/core/utils/toast_util.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/colors.dart';
 import '../../core/utils/device_info_util.dart';
 import 'providers/login_provider.dart';
@@ -66,7 +67,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       state.whenOrNull(
         data: (_) {
           // 登录成功，跳转首页
-          context.go('/main');
+          // 携带 fromLogin 标记，告知 MainPage 这是登录跳转，无需再次刷新数据
+          context.go(
+            AppConstants.routeMain,
+            extra: {AppConstants.extraFromLogin: true},
+          );
         },
         error: (error, _) {
           // 登录失败，显示错误

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/colors.dart';
 import '../../core/utils/dialog_util.dart';
 import '../../core/utils/toast_util.dart';
@@ -415,7 +416,7 @@ class ProfilePage extends ConsumerWidget {
               context.pop();
             }
             // 跳转到登录页（无法返回）
-            context.pushReplacement('/login');
+            context.pushReplacement(AppConstants.routeLogin);
           }
         } catch (e) {
           // 隐藏 Loading
