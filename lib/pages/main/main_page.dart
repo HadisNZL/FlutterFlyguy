@@ -15,13 +15,13 @@ import '../profile/profile_page.dart';
 import '../records/records_page.dart';
 
 class MainPage extends ConsumerStatefulWidget {
+  const MainPage({super.key, this.extra});
+
   /// 路由携带的额外参数
   /// 用于接收页面跳转时的上下文信息，例如：
   /// - fromLogin: 是否来自登录页面（用于判断是否需要刷新数据）
   /// - 未来可扩展其他参数
   final Map<String, dynamic>? extra;
-
-  const MainPage({super.key, this.extra});
 
   @override
   ConsumerState<MainPage> createState() => _MainPageState();
@@ -30,13 +30,10 @@ class MainPage extends ConsumerStatefulWidget {
 class _MainPageState extends ConsumerState<MainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    RecordsPage(),
-    GuardPage(),
-    DevicesPage(),
-    ProfilePage(),
-  ];
+  /// 记录已访问过的页面索引
+  /// 用于懒加载优化：只创建用户访问过的页面
+  /// 首次进入默认只加载首页（索引 0）
+  final Set<int> _visitedPages = {0};
 
   @override
   void initState() {
@@ -90,6 +87,32 @@ class _MainPageState extends ConsumerState<MainPage> {
     // 登录跳转：跳过刷新（登录流程已请求过数据）
   }
 
+  /// 懒加载构建页面
+  /// 只创建已访问过的页面，未访问的页面返回空占位
+  /// 这样首次启动只创建首页，减少启动时间和内存占用
+  Widget _buildPage(int index) {
+    // 如果该页面未被访问过，返回空占位
+    if (!_visitedPages.contains(index)) {
+      return const SizedBox.shrink();
+    }
+
+    // 根据索引返回对应的页面
+    switch (index) {
+      case 0:
+        return const HomePage();
+      case 1:
+        return const RecordsPage();
+      case 2:
+        return const GuardPage();
+      case 3:
+        return const DevicesPage();
+      case 4:
+        return const ProfilePage();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
   Widget _buildNavItem(String name, int index) {
     final isSelected = _currentIndex == index;
     return Image.asset(
@@ -100,10 +123,20 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: List.generate(5, (index) => _buildPage(index)),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: (index) {
+          setState(() {
+            // 标记该页面为已访问（触发懒加载）
+            _visitedPages.add(index);
+            // 切换到目标页面
+            _currentIndex = index;
+          });
+        },
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: AppColors.colorTheme,

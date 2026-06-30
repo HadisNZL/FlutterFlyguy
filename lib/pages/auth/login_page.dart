@@ -61,20 +61,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginProvider);
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+    final canSubmit =
+        username.isNotEmpty && password.isNotEmpty && !loginState.isLoading;
 
     // 监听登录状态
     ref.listen<AsyncValue<void>>(loginProvider, (_, state) {
       state.whenOrNull(
         data: (_) {
-          // 登录成功，跳转首页
-          // 携带 fromLogin 标记，告知 MainPage 这是登录跳转，无需再次刷新数据
           context.go(
             AppConstants.routeMain,
             extra: {AppConstants.extraFromLogin: true},
           );
         },
         error: (error, _) {
-          // 登录失败，显示错误
           _showError(error.toString());
         },
       );
@@ -86,41 +87,60 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 80),
+              const SizedBox(height: 100),
 
-              // Logo
-              Center(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 100,
-                  height: 100,
-                  errorBuilder: (_, _, _) => const Icon(
-                    Icons.account_circle,
-                    size: 100,
-                    color: AppColors.colorTheme,
+              // Logo 占位
+              Container(
+                width: 160,
+                height: 100,
+                color: AppColors.colorTheme.withValues(alpha: 0.1),
+                child: const Center(
+                  child: Text(
+                    'LOGO',
+                    style: TextStyle(
+                      color: AppColors.colorTheme,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 60),
+              const SizedBox(height: 80),
 
               // 账号输入框
               TextField(
                 controller: _usernameController,
+                onChanged: (_) => setState(() {}),
                 decoration: InputDecoration(
-                  hintText: '请输入手机号/邮箱',
-                  hintStyle: const TextStyle(color: AppColors.color999999),
-                  prefixIcon: const Icon(
-                    Icons.person_outline,
-                    color: AppColors.color666666,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.colorF5F5F5,
-                  border: OutlineInputBorder(
+                  hintText: '',
+                  suffixIcon: username.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(
+                            Icons.cancel,
+                            color: AppColors.color999999,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            _usernameController.clear();
+                            setState(() {});
+                          },
+                        )
+                      : null,
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
+                    borderSide: const BorderSide(
+                      color: AppColors.colorTheme,
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: AppColors.colorTheme,
+                      width: 1.5,
+                    ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -136,19 +156,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
+                onChanged: (_) => setState(() {}),
                 decoration: InputDecoration(
-                  hintText: '请输入密码',
-                  hintStyle: const TextStyle(color: AppColors.color999999),
-                  prefixIcon: const Icon(
-                    Icons.lock_outline,
-                    color: AppColors.color666666,
-                  ),
+                  hintText: '密码',
+                  hintStyle: const TextStyle(color: AppColors.colorCCCCCC),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: AppColors.color666666,
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: AppColors.color999999,
+                      size: 20,
                     ),
                     onPressed: () {
                       setState(() {
@@ -156,11 +174,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       });
                     },
                   ),
-                  filled: true,
-                  fillColor: AppColors.colorF5F5F5,
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
+                    borderSide: const BorderSide(
+                      color: AppColors.colorEEEEEE,
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: AppColors.colorTheme,
+                      width: 1.5,
+                    ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -169,40 +195,65 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-              // 忘记密码
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // TODO: 跳转忘记密码页面
-                    _showError('忘记密码功能待开发');
-                  },
-                  child: const Text(
-                    '忘记密码？',
-                    style: TextStyle(
-                      color: AppColors.color666666,
-                      fontSize: 14,
+              // 底部链接行
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      _showError('注册功能待开发');
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text(
+                      '立即注册',
+                      style: TextStyle(
+                        color: AppColors.colorTheme,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
-                ),
+                  TextButton(
+                    onPressed: () {
+                      _showError('忘记密码功能待开发');
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text(
+                      '忘记密码',
+                      style: TextStyle(
+                        color: AppColors.color333333,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 24),
 
               // 登录按钮
               SizedBox(
-                height: 48,
+                width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
-                  onPressed: loginState.isLoading ? null : _handleLogin,
+                  onPressed: canSubmit ? _handleLogin : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.colorTheme,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                    disabledBackgroundColor: AppColors.color999999,
+                    disabledBackgroundColor: AppColors.colorCCCCCC,
+                    elevation: 0,
                   ),
                   child: loginState.isLoading
                       ? const SizedBox(
@@ -215,47 +266,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ),
                         )
-                      : const Text(
-                          '登录',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.send, size: 18),
+                            SizedBox(width: 8),
+                            Text(
+                              '登录',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.15),
 
-              // 立即注册
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    '还没有账号？',
-                    style: TextStyle(
-                      color: AppColors.color666666,
-                      fontSize: 14,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      // TODO: 跳转注册页面
-                      _showError('注册功能待开发');
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                    ),
-                    child: const Text(
-                      '立即注册',
-                      style: TextStyle(
-                        color: AppColors.colorTheme,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              const SizedBox(height: 60),
             ],
           ),
         ),

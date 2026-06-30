@@ -32,15 +32,23 @@ lib/
 ├── core/              # 全局配置
 │   ├── dio/           # Dio 实例与拦截器
 │   │   ├── dio_client.dart
-│   │   └── interceptors/
-│   ├── storage/       # 本地缓存工具
-│   ├── constants/     # 全局常量
+│   │   └── interceptors/  # Token、业务响应等拦截器
+│   ├── storage/       # 本地缓存工具（Hive）
+│   ├── constants/     # 全局常量（路由、存储、错误码、颜色等）
+│   ├── exceptions/    # 业务异常类
+│   ├── handlers/      # 全局错误处理器（策略模式）
+│   ├── router/        # 路由配置
 │   ├── extensions/    # 扩展方法
-│   └── utils/         # 工具函数
+│   └── utils/         # 工具函数（Dialog、Toast、Loading）
 ├── api/               # API 接口层（Dio 直接实现）
 ├── repositories/      # 数据聚合层（只有实现类）
 ├── models/            # Freezed 数据模型（按模块分包）
+├── providers/         # Provider 层
+│   └── global/        # 全局共享状态（用户、错误流等）
 ├── pages/             # 页面（按模块分包）
+│   └── {module}/
+│       ├── {module}_page.dart
+│       └── providers/ # 页面级 Provider
 ├── widgets/           # 通用组件
 └── main.dart          # 应用入口
 ```
@@ -289,19 +297,75 @@ flutter clean
 | 技术领域 | 使用方案 |
 |---------|---------|
 | 状态管理 | `flutter_riverpod` + `@riverpod` |
-| 网络请求 | `dio` |
+| 网络请求 | `dio` + 自定义拦截器 |
 | 数据模型 | `freezed` + `json_serializable` |
 | 本地存储 | `hive` + `hive_flutter` |
 | 路由导航 | `go_router` |
 | 日志工具 | `logger` + `pretty_dio_logger` |
+| UI 工具 | `flutter_easyloading`（Toast + Loading） |
+| 设备信息 | `device_info_plus` + `package_info_plus` |
+
+## 核心特性
+
+### 1. 统一常量管理
+
+所有硬编码的字符串常量（路由、存储 Key、错误码）集中在 `lib/core/constants/app_constants.dart`，避免散落的魔法字符串。
+
+```dart
+// ✅ 正确
+context.go(AppConstants.routeMain, extra: {AppConstants.extraFromLogin: true});
+
+// ❌ 错误
+context.go('/main', extra: {'fromLogin': true});
+```
+
+### 2. 全局错误处理机制
+
+采用**策略模式 + 注册表模式**统一处理特殊业务错误码（如账号冲突、Token 过期）：
+
+- **拦截器映射**：使用 Map 映射错误码 → 异常对象，替代 if-else
+- **全局错误流**：通过 `GlobalErrorProvider` 集中分发错误事件
+- **策略处理器**：每个错误码对应独立的 Handler（弹窗、跳转、清理数据）
+
+**扩展性示例**：
+```dart
+// 1. 在 error_codes.dart 定义错误码
+static const int tokenExpired = 74016;
+
+// 2. 在拦截器添加映射
+BusinessErrorCode.tokenExpired: (data) => TokenExpiredException(...),
+
+// 3. 实现 Handler
+class TokenExpiredHandler extends GlobalErrorHandler<TokenExpiredException> { ... }
+
+// 4. 注册到 Registry
+TokenExpiredException: TokenExpiredHandler(),
+```
+
+### 3. 智能路由参数传递
+
+通过 `extra` 参数传递标记，避免不必要的重复请求：
+
+```dart
+// 登录成功后跳转（数据已是最新）
+context.go(AppConstants.routeMain, extra: {AppConstants.extraFromLogin: true});
+
+// 主页根据来源判断是否刷新
+if (!widget.fromLogin) {
+  ref.read(userProvider.notifier).refresh(); // 冷启动才刷新
+}
+```
 
 ## 开发规范
 
-1. 所有数据模型使用 `freezed` + `json_serializable`
-2. Repository 直接写实现类，不要抽象接口
-3. 使用 `AsyncValue` 处理异步状态，不使用 `Either`
-4. 提交前运行 `flutter analyze`
-5. 遵循 YAGNI 原则，不做过度设计
+1. **数据模型**：所有数据类使用 `freezed` + `json_serializable`，保证不可变性
+2. **Repository 层**：直接写实现类，不要抽象接口（遵循 YAGNI 原则）
+3. **异步状态**：使用 Riverpod `AsyncValue` 处理异步状态，不使用 `Either` 或 `dartz`
+4. **常量管理**：所有硬编码字符串统一在 `AppConstants` 中管理
+5. **错误处理**：特殊业务错误码通过全局错误处理机制统一处理
+6. **路由传参**：使用 `extra` 传递标记，避免重复请求
+7. **代码质量**：提交前运行 `flutter analyze`，确保无警告
+8. **代码生成**：修改 Model/Provider 后必须运行 `dart run build_runner build`
 
 ## 全局共享状态
 
@@ -345,4 +409,27 @@ await ref.read(globalUserProvider.notifier).updateAvatar(newAvatar);
 ```
 
 **详细说明**：查看 [CLAUDE.md - 3.1.1 全局共享状态 Provider](CLAUDE.md#311-全局共享状态-provider)
+
+## 项目亮点
+
+### 架构设计
+- ✅ **实用主义**：拒绝过度设计，直接实现类代替抽象接口
+- ✅ **类型安全**：Freezed 不可变模型 + AsyncValue 异步状态
+- ✅ **可扩展**：策略模式错误处理，新增错误码只需添加映射
+
+### 开发效率
+- ✅ **AI 辅助**：5 个代码生成 Skills，快速搭建标准模块
+- ✅ **统一管理**：常量、错误码、工具类集中管理
+- ✅ **智能优化**：路由参数避免重复请求，提升用户体验
+
+### 代码质量
+- ✅ **架构文档**：详细的 CLAUDE.md 指导 AI 和开发者遵循统一规范
+- ✅ **错误处理**：全局错误流 + 防重入机制，避免重复弹窗
+- ✅ **本地缓存**：Hive 高性能存储 + Token 自动注入
+
+## 了解更多
+
+- **架构规范**：[CLAUDE.md](CLAUDE.md) - 详细的架构约定和编程规范
+- **全局错误处理**：[CLAUDE.md - 第 7 章](CLAUDE.md#7-全局错误处理机制)
+- **路由传参优化**：[CLAUDE.md - 第 8 章](CLAUDE.md#8-路由与状态同步规范)
 

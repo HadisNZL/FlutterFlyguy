@@ -28,16 +28,18 @@ lib/
 │   │   ├── dio_client.dart # 全局 Dio 实例配置
 │   │   └── interceptors/   # 自定义拦截器（Token、日志、错误）
 │   ├── storage/            # 本地缓存工具封装（SharedPreferences / Isar）
-│   ├── constants/          # 全局常量（颜色、尺寸、接口地址枚举）
+│   ├── constants/          # 全局常量（颜色、尺寸、接口地址、错误码枚举）
+│   ├── exceptions/         # 业务异常类（GlobalHandledException 子类）
+│   ├── handlers/           # 全局错误处理器（策略模式实现）
 │   ├── extensions/         # 通用扩展方法（String, DateTime 等）
-│   └── utils/              # 无状态的纯工具函数（如格式化、Toast等）
+│   └── utils/              # 无状态的纯工具函数（如格式化、Toast、Dialog等）
 ├── api/                    # 纯网络请求接口层（Dio 直接实现）
 ├── repositories/           # 数据聚合层（只有实现类，无抽象接口）
 ├── models/                 # 唯一的数据实体层（按模块分包）
 │   ├── user/               # 业务模型（如 user_model.dart）
 │   └── states/             # 聚合状态类（如 profile_state.dart，用于组合多个 Model）
 ├── providers/              # Provider 层
-│   └── global/             # 全局共享状态 Provider（用户信息、购物车等）
+│   └── global/             # 全局共享状态 Provider（用户信息、购物车、全局错误等）
 ├── pages/                  # 视图页面层（按业务模块分包）
 │   └── {module}/
 │       ├── {module}_page.dart
@@ -66,6 +68,9 @@ lib/
 - API 基础 URL
 - 超时时间
 - 其他全局配置项
+
+#### 错误码相关
+- 特殊业务错误码（如 `BusinessErrorCode.accountConflict = 74015`）
 
 ### AppConstants 类结构
 
@@ -378,3 +383,245 @@ dart run build_runner build --delete-conflicting-outputs
 | 纯静态页面 | `/gen-page` (无状态) | 无需 Provider |
 | 后期新增字段 | `/gen-model` | 只更新 Model |
 | 需要聚合状态 | 手动创建 Freezed 类 | 类型安全，避免动态类型 |
+
+## 7. 全局错误处理机制
+
+### 7.1 核心设计原则
+项目采用**策略模式 + 注册表模式**统一处理全局特殊错误码（如账号冲突、权限失效等），避免业务代码散落 if-else 判断。
+
+### 7.2 架构流程
+
+```text
+业务接口响应 → BusinessResponseInterceptor（拦截器）
+                ↓ 错误码映射
+             GlobalHandledException（异常对象）
+                ↓ 推送到全局
+         GlobalErrorProvider（全局错误流）
+                ↓ 监听处理
+         GlobalErrorHandler（策略处理器）
+                ↓ 执行动作
+      UI 弹窗/跳转/清理数据等
+```
+
+### 7.3 各层职责
+
+#### 错误码常量（`core/constants/error_codes.dart`）
+- 集中管理所有特殊业务错误码
+- 示例：
+  ```dart
+  class BusinessErrorCode {
+    static const int accountConflict = 74015; // 账号冲突
+    static const int tokenExpired = 74016;    // Token 过期
+  }
+  ```
+
+#### 业务异常类（`core/exceptions/business_exceptions.dart`）
+- 所有全局异常必须继承 `GlobalHandledException`
+- 携带业务上下文数据（如设备信息、登录时间）
+- 示例：
+  ```dart
+  class AccountConflictException extends GlobalHandledException {
+    final String latestDevice;
+    final String latestLoginTime;
+    
+    AccountConflictException({
+      required this.latestDevice,
+      required this.latestLoginTime,
+      required super.message,
+    });
+  }
+  ```
+
+#### 拦截器映射（`core/dio/interceptors/business_response_interceptor.dart`）
+- **核心原则**：使用 Map 映射替代 if-else，新增错误码只需添加映射项
+- 责任：
+  1. 拦截业务接口响应（`{IsSuccess, ErrorCode, Data, Message}`）
+  2. 查表匹配错误码 → 工厂函数创建异常对象
+  3. 推送到 `GlobalErrorProvider`（除 logout 接口）
+  4. 转换为 `DioException` 向上抛出（供 Provider 层处理）
+- 示例：
+  ```dart
+  static final _errorCodeMap = <int, GlobalHandledException Function(Map<String, dynamic>)>{
+    BusinessErrorCode.accountConflict: (data) => AccountConflictException(
+      latestDevice: data['LatestDevice'] ?? '未知设备',
+      latestLoginTime: _formatTime(data['LatestLoginTime'] ?? ''),
+      message: '账号在其他设备登录',
+    ),
+  };
+  ```
+
+#### 全局错误流（`providers/global/global_error_provider.dart`）
+- 基于 `StreamController` 实现事件流
+- 责任：接收拦截器推送的异常，分发给所有监听器
+- 示例：
+  ```dart
+  @riverpod
+  class GlobalError extends _$GlobalError {
+    final _controller = StreamController<GlobalHandledException>.broadcast();
+    
+    Stream<GlobalHandledException> get stream => _controller.stream;
+    
+    void notify(GlobalHandledException error) {
+      _controller.add(error);
+    }
+  }
+  ```
+
+#### 错误处理器（`core/handlers/global_error_handler.dart`）
+- **核心原则**：策略模式，每个错误码对应一个 Handler
+- 责任：执行具体的业务逻辑（弹窗、跳转、清理数据）
+- 示例：
+  ```dart
+  class AccountConflictHandler extends GlobalErrorHandler<AccountConflictException> {
+    @override
+    Future<void> handle(BuildContext context, WidgetRef ref, AccountConflictException error) async {
+      await DialogUtil.showAlert(
+        context,
+        title: '账号冲突',
+        content: '您的账号已在 ${error.latestDevice} 设备登录\n请重新登录',
+      );
+      context.go(AppConstants.routeLogin);
+    }
+  }
+  ```
+
+#### 处理器注册表（`core/handlers/global_error_handler_registry.dart`）
+- 维护错误类型 → Handler 的映射关系
+- 示例：
+  ```dart
+  class GlobalErrorHandlerRegistry {
+    static final _handlers = <Type, GlobalErrorHandler>{
+      AccountConflictException: AccountConflictHandler(),
+      TokenExpiredException: TokenExpiredHandler(),
+    };
+    
+    static GlobalErrorHandler? getHandler<T extends GlobalHandledException>() {
+      return _handlers[T];
+    }
+  }
+  ```
+
+### 7.4 使用规范
+
+#### 新增特殊错误码的标准流程
+1. **定义错误码常量**（`error_codes.dart`）
+   ```dart
+   static const int tokenExpired = 74016;
+   ```
+
+2. **创建异常类**（`business_exceptions.dart`）
+   ```dart
+   class TokenExpiredException extends GlobalHandledException {
+     TokenExpiredException({required super.message});
+   }
+   ```
+
+3. **添加拦截器映射**（`business_response_interceptor.dart`）
+   ```dart
+   BusinessErrorCode.tokenExpired: (data) => TokenExpiredException(
+     message: data['Message'] ?? 'Token 已过期',
+   ),
+   ```
+
+4. **实现 Handler**（`handlers/` 目录）
+   ```dart
+   class TokenExpiredHandler extends GlobalErrorHandler<TokenExpiredException> {
+     @override
+     Future<void> handle(BuildContext context, WidgetRef ref, TokenExpiredException error) async {
+       // 清理 Token、跳转登录等
+     }
+   }
+   ```
+
+5. **注册到 Registry**（`global_error_handler_registry.dart`）
+   ```dart
+   TokenExpiredException: TokenExpiredHandler(),
+   ```
+
+#### UI 层监听（在根 Widget 中）
+```dart
+ref.listen(globalErrorProvider, (previous, next) {
+  final error = next; // StreamController 推送的异常
+  final handler = GlobalErrorHandlerRegistry.getHandler(error.runtimeType);
+  handler?.handle(context, ref, error);
+});
+```
+
+### 7.5 设计优势
+✅ **扩展性**：新增错误码只需添加映射，无需修改拦截器核心逻辑
+✅ **单一职责**：拦截器只负责映射，Handler 负责 UI 逻辑
+✅ **防重入**：全局 Provider 通过 `isProcessing` 标记避免重复弹窗
+✅ **类型安全**：泛型确保 Handler 接收正确的异常类型
+✅ **解耦**：业务错误处理与 Provider 层完全分离
+
+## 8. 路由与状态同步规范
+
+### 8.1 路由参数传递最佳实践
+
+**核心原则**：使用 `go_router` 的 `extra` 参数传递标记，避免不必要的接口重复请求。
+
+#### 典型场景：登录后跳转主页
+**问题**：用户登录成功后，已获取最新用户数据，跳转到主页时不应再次请求相同接口。
+
+**解决方案**：通过路由参数传递 `fromLogin` 标记
+```dart
+// 登录成功后跳转
+context.go(
+  AppConstants.routeMain,
+  extra: {AppConstants.extraFromLogin: true},
+);
+
+// 主页根据来源判断是否刷新
+class MainPage extends ConsumerStatefulWidget {
+  final bool fromLogin;
+  
+  const MainPage({this.fromLogin = false, super.key});
+  
+  @override
+  void initState() {
+    super.initState();
+    
+    // 冷启动（直接打开主页）才刷新
+    if (!widget.fromLogin) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(userProvider.notifier).refresh();
+      });
+    }
+    // 登录跳转过来的，数据已是最新，跳过刷新
+  }
+}
+```
+
+#### 路由配置示例
+```dart
+GoRoute(
+  path: AppConstants.routeMain,
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>?;
+    final fromLogin = extra?[AppConstants.extraFromLogin] as bool? ?? false;
+    return MainPage(fromLogin: fromLogin);
+  },
+)
+```
+
+### 8.2 常量管理规范
+
+**核心原则**：所有路由相关的字符串（路径、参数 key）必须在 `AppConstants` 中统一管理
+
+```dart
+class AppConstants {
+  // 路由路径
+  static const String routeMain = '/main';
+  static const String routeLogin = '/login';
+  
+  // 路由参数 Key
+  static const String extraFromLogin = 'fromLogin';
+  static const String extraUserId = 'userId';
+}
+```
+
+### 8.3 优势
+✅ **避免重复请求**：同一数据不会在短时间内重复请求
+✅ **提升用户体验**：页面切换更流畅，减少等待时间
+✅ **类型安全**：通过常量避免拼写错误
+✅ **易于维护**：路由参数统一管理，修改只需一处

@@ -1,15 +1,20 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../core/exceptions/business_exceptions.dart';
 import '../../core/storage/login_init_storage.dart';
 import '../../core/storage/token_storage.dart';
+import '../../models/login_init/defense_area_model.dart';
 import '../../models/login_init/login_init_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/login_init_repository.dart';
 import 'global_error_provider.dart';
 
 part 'global_auth_provider.g.dart';
+
+/// 当前选中的防区 ID（仅存在于内存，不持久化）
+final currentAreaIdStateProvider = StateProvider<int?>((ref) => null);
 
 /// 全局认证状态
 /// 管理用户登录状态和 LoginInit 数据
@@ -25,6 +30,52 @@ class GlobalAuth extends _$GlobalAuth {
   /// 同步设置数据（供 MainPage 调用）
   void setState(LoginInitModel data) {
     state = data;
+    // 重置防区选择为第一个
+    ref.read(currentAreaIdStateProvider.notifier).state = null;
+  }
+
+  /// 获取当前防区 ID（默认第一个防区）
+  int get currentAreaId {
+    final selectedId = ref.read(currentAreaIdStateProvider);
+
+    // 如果已选择，返回选中的
+    if (selectedId != null) return selectedId;
+
+    // 否则返回第一个防区的 ID
+    if (state?.defenseAreaList.isNotEmpty ?? false) {
+      return state!.defenseAreaList.first.areaId;
+    }
+
+    // 无防区数据，返回 0
+    return 0;
+  }
+
+  /// 获取当前防区对象
+  DefenseArea? get currentDefenseArea {
+    if (state == null || state!.defenseAreaList.isEmpty) return null;
+
+    try {
+      // 根据 currentAreaId 查找对应的防区
+      return state!.defenseAreaList.firstWhere(
+        (area) => area.areaId == currentAreaId,
+      );
+    } catch (e) {
+      // 如果找不到（理论上不应该发生），返回第一个
+      return state!.defenseAreaList.first;
+    }
+  }
+
+  /// 切换防区
+  /// 参数：areaId - 要切换到的防区 ID
+  void switchDefenseArea(int areaId) {
+    // 校验防区是否存在
+    if (state == null) return;
+
+    final exists = state!.defenseAreaList.any((area) => area.areaId == areaId);
+    if (!exists) return;
+
+    // 更新当前防区 ID（通过 StateProvider 触发响应式更新）
+    ref.read(currentAreaIdStateProvider.notifier).state = areaId;
   }
 
   /// 用户登录
@@ -146,5 +197,30 @@ class GlobalAuth extends _$GlobalAuth {
 
     // 更新状态
     state = null;
+
+    // 重置防区选择
+    ref.read(currentAreaIdStateProvider.notifier).state = null;
   }
+}
+
+/// 当前防区 ID Provider（响应式）
+/// 用于其他页面监听当前选中的防区 ID
+@riverpod
+int currentAreaId(CurrentAreaIdRef ref) {
+  // 监听 currentAreaIdStateProvider 和 globalAuthProvider
+  ref.watch(currentAreaIdStateProvider);
+  ref.watch(globalAuthProvider);
+  // 返回当前防区 ID
+  return ref.read(globalAuthProvider.notifier).currentAreaId;
+}
+
+/// 当前防区对象 Provider（响应式）
+/// 用于其他页面监听当前选中的防区对象
+@riverpod
+DefenseArea? currentDefenseArea(CurrentDefenseAreaRef ref) {
+  // 监听 currentAreaIdStateProvider 和 globalAuthProvider
+  ref.watch(currentAreaIdStateProvider);
+  ref.watch(globalAuthProvider);
+  // 返回当前防区对象
+  return ref.read(globalAuthProvider.notifier).currentDefenseArea;
 }

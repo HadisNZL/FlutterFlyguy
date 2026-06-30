@@ -2,45 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/colors.dart';
+import '../../models/login_init/defense_area_model.dart';
 import '../../providers/global/global_auth_provider.dart';
+import '../../widgets/defense_area_drawer.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 直接读取数据（MainPage 已同步设置缓存）
+    // 获取完整的登录初始化数据（包含所有防区）
     final loginInitData = ref.watch(globalAuthProvider);
-    final areaName = loginInitData?.defenseAreaList.first.areaName ?? 'diviner';
 
-    return _buildHomePage(context, areaName);
+    // 监听当前选中的防区 ID（响应式更新）
+    final currentAreaId = ref.watch(currentAreaIdProvider);
+
+    // 从数据中查找当前防区
+    DefenseArea? currentArea;
+    if (loginInitData != null && loginInitData.defenseAreaList.isNotEmpty) {
+      try {
+        currentArea = loginInitData.defenseAreaList.firstWhere(
+          (area) => area.areaId == currentAreaId,
+        );
+      } catch (e) {
+        // 如果找不到，使用第一个
+        currentArea = loginInitData.defenseAreaList.first;
+      }
+    }
+
+    final areaName = currentArea?.areaName ?? '';
+    final defenseAreas = loginInitData?.defenseAreaList ?? <DefenseArea>[];
+
+    return _buildHomePage(context, ref, areaName, defenseAreas, currentAreaId);
   }
 
   /// 构建首页正常内容
-  Widget _buildHomePage(BuildContext context, String areaName) {
-
+  Widget _buildHomePage(
+    BuildContext context,
+    WidgetRef ref,
+    String areaName,
+    List<DefenseArea> defenseAreas,
+    int currentAreaId,
+  ) {
     return Scaffold(
       backgroundColor: AppColors.colorWhite,
-      body: Column(
-        children: [
-          _buildHeaderWithModeSelector(context, areaName),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  _buildDeviceList(),
-                  const SizedBox(height: 16),
-                  _buildCameraPreview(),
-                  const SizedBox(height: 16),
-                  _buildAddDevice(),
-                  const SizedBox(height: 80),
-                ],
+      // 添加侧滑抽屉
+      drawer: DefenseAreaDrawer(
+        defenseAreas: defenseAreas,
+        currentAreaId: currentAreaId,
+        onAreaSelected: (areaId) {
+          // 切换防区
+          ref.read(globalAuthProvider.notifier).switchDefenseArea(areaId);
+        },
+      ),
+      body: Builder(
+        builder: (scaffoldContext) => Column(
+          children: [
+            _buildHeaderWithModeSelector(scaffoldContext, areaName),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    _buildDeviceList(),
+                    const SizedBox(height: 16),
+                    _buildCameraPreview(),
+                    const SizedBox(height: 16),
+                    _buildAddDevice(),
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -67,7 +103,10 @@ class HomePage extends ConsumerWidget {
                   bottom: 0,
                   child: IconButton(
                     icon: const Icon(Icons.menu, color: Colors.black),
-                    onPressed: () {},
+                    onPressed: () {
+                      // 打开侧滑抽屉
+                      Scaffold.of(context).openDrawer();
+                    },
                   ),
                 ),
                 // 中间标题（绝对居中）
