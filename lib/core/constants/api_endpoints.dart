@@ -24,4 +24,7 @@ class _BusinessEndpoints {
 
   /// 退出登录
   String get logout => '/APP/LogOut';
+
+  /// 获取设备列表
+  String get getDevices => '/APP/GetDevices';
 }

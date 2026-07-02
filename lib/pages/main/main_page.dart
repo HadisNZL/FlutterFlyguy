@@ -51,6 +51,8 @@ class _MainPageState extends ConsumerState<MainPage> {
   /// 2. 同步读取 LoginInit 缓存并设置到 provider
   /// 3. 根据来源决定是否触发后台刷新
   ///
+  /// 注意：设备数据已在 main() 中预加载到 inMemoryDevicesProvider
+  ///
   /// 参数：
   /// - skipRefresh: 是否跳过刷新
   ///   - true: 跳过刷新（登录跳转场景，数据已是最新）

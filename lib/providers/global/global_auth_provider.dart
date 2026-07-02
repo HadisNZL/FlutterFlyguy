@@ -5,10 +5,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../core/exceptions/business_exceptions.dart';
 import '../../core/storage/login_init_storage.dart';
 import '../../core/storage/token_storage.dart';
+import '../../core/utils/app_logger.dart';
 import '../../models/login_init/defense_area_model.dart';
 import '../../models/login_init/login_init_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/login_init_repository.dart';
+import 'global_devices_provider.dart';
 import 'global_error_provider.dart';
 
 part 'global_auth_provider.g.dart';
@@ -30,8 +32,8 @@ class GlobalAuth extends _$GlobalAuth {
   /// 同步设置数据（供 MainPage 调用）
   void setState(LoginInitModel data) {
     state = data;
-    // 重置防区选择为第一个
-    ref.read(currentAreaIdStateProvider.notifier).state = null;
+    // 保留预设的 currentAreaId，不重置
+    // 这样可以避免覆盖 main() 中预设的值
   }
 
   /// 获取当前防区 ID（默认第一个防区）
@@ -74,8 +76,33 @@ class GlobalAuth extends _$GlobalAuth {
     final exists = state!.defenseAreaList.any((area) => area.areaId == areaId);
     if (!exists) return;
 
-    // 更新当前防区 ID（通过 StateProvider 触发响应式更新）
+    AppLogger.d('🔄 [switchDefenseArea] 切换到防区 $areaId', tag: LogTag.auth);
+
+    // 1. 检查目标防区是否有缓存
+    final allDevices = ref.read(inMemoryDevicesProvider);
+    final cachedDevices = allDevices[areaId];
+
+    AppLogger.d('📦 [switchDefenseArea] 内存缓存状态:', tag: LogTag.auth);
+    AppLogger.d('   - 所有防区: ${allDevices.keys.toList()}', tag: LogTag.auth);
+    AppLogger.d('   - 防区 $areaId: ${cachedDevices?.length ?? 0} 个设备', tag: LogTag.auth);
+
+    if (cachedDevices == null || cachedDevices.isEmpty) {
+      AppLogger.w('❌ [switchDefenseArea] 无内存缓存，设置空数组触发占位符', tag: LogTag.auth);
+      // 无缓存：设置空数组，触发占位符显示（加载中状态）
+      ref.read(inMemoryDevicesProvider.notifier).update((state) => {
+            ...state,
+            areaId: [],
+          });
+    } else {
+      AppLogger.d('✅ [switchDefenseArea] 有内存缓存，直接使用（瞬间显示）', tag: LogTag.auth);
+    }
+    // 如果有缓存，不需要修改，切换 areaId 后会自动显示缓存数据
+
+    // 2. 更新 currentAreaId（触发 deviceProvider 重新构建和 HomePage 重新渲染）
     ref.read(currentAreaIdStateProvider.notifier).state = areaId;
+    AppLogger.d('✅ [switchDefenseArea] currentAreaId 已更新为 $areaId', tag: LogTag.auth);
+
+    // 3. deviceProvider 会自动处理后续的数据加载和更新
   }
 
   /// 用户登录

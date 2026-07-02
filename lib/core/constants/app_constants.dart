@@ -35,4 +35,27 @@ class AppConstants {
 
   /// 生成 LoginInit 存储的完整 key
   static String loginInitKey(int accountId) => '$keyLoginInitPrefix$accountId';
+
+  /// 设备列表存储 Box 名称
+  static const String boxDevices = 'devices';
+
+  /// 设备列表存储的 key
+  static const String keyDeviceList = 'device_list';
+
+  /// ==================== 设备类型常量 ====================
+
+  /// 设备类型：报警主机
+  static const String deviceTypeGateway = 'gateway';
+
+  /// 设备类型：摄像头
+  static const String deviceTypeCamera = 'camera';
+
+  /// 设备类型：红外探测器
+  static const String deviceTypeMotion = 'motion';
+
+  /// 设备类型：门磁传感器
+  static const String deviceTypeDoor = 'door';
+
+  /// 设备类型：平安通紧急呼叫
+  static const String deviceTypeHelpcall = 'helpcall';
 }
