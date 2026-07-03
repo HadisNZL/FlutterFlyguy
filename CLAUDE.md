@@ -765,7 +765,9 @@ flutter logs | grep -v "nblog"
 
 ### 10.2 预加载机制
 
-**位置**：`lib/main.dart` 中的 `_preloadData()`
+**位置**：`lib/core/services/preload_service.dart`
+
+**调用**：在 `main()` 函数中通过 `PreloadService.executeSync()` 调用
 
 **执行时机**：App 启动时，在 UI 渲染前同步执行
 
@@ -778,7 +780,7 @@ flutter logs | grep -v "nblog"
 **关键代码**：
 ```dart
 // main() 中
-final preloaded = _preloadData();
+final preloaded = PreloadService.executeSync();
 
 runApp(
   ProviderScope(

@@ -57,10 +57,18 @@ class AppLogger {
   /// 格式化消息（添加 tag 和统一前缀）
   static String _formatMessage(String message, String? tag) {
     const prefix = 'nblog'; // 统一前缀，方便筛选所有 AppLogger 日志
+
+    // 添加时间戳（HH:mm:ss.SSS）
+    final now = DateTime.now();
+    final time = '${now.hour.toString().padLeft(2, '0')}:'
+        '${now.minute.toString().padLeft(2, '0')}:'
+        '${now.second.toString().padLeft(2, '0')}.'
+        '${now.millisecond.toString().padLeft(3, '0')}';
+
     if (tag != null) {
-      return '$prefix [$tag] $message';
+      return '$prefix [$time] [$tag] $message';
     } else {
-      return '$prefix $message';
+      return '$prefix [$time] $message';
     }
   }
 

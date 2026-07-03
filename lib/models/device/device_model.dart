@@ -16,9 +16,9 @@ class DeviceModel with _$DeviceModel {
     @HiveField(1) @JsonKey(name: 'DeviceId') required int deviceId,
     @HiveField(2) @JsonKey(name: 'OEMDeviceId') required String oemDeviceId,
     @HiveField(3) @JsonKey(name: 'Location') required String location,
+    @HiveField(6) @JsonKey(name: 'DeviceType') required String deviceType,
     @HiveField(4) @JsonKey(name: 'OEMPin') String? oemPin,
     @HiveField(5) @JsonKey(name: 'ConnectionState') String? connectionState,
-    @HiveField(6) @JsonKey(name: 'DeviceType') required String deviceType,
     @HiveField(7) @JsonKey(name: 'Model') String? model,
     @HiveField(8) @JsonKey(name: 'DeviceVersion') String? deviceVersion,
     @HiveField(9) @JsonKey(name: 'PushPlanVersion') int? pushPlanVersion,
@@ -62,8 +62,12 @@ class DeviceModel with _$DeviceModel {
     @HiveField(37) @JsonKey(name: 'Mic') int? mic,
     @HiveField(38) @JsonKey(name: 'Sort') int? sort,
     @HiveField(39) @JsonKey(name: 'AlarmAudioFile') int? alarmAudioFile,
-    @HiveField(40) @JsonKey(name: 'AlarmAudioBeginTime') String? alarmAudioBeginTime,
-    @HiveField(41) @JsonKey(name: 'AlarmAudioEndTime') String? alarmAudioEndTime,
+    @HiveField(40)
+    @JsonKey(name: 'AlarmAudioBeginTime')
+    String? alarmAudioBeginTime,
+    @HiveField(41)
+    @JsonKey(name: 'AlarmAudioEndTime')
+    String? alarmAudioEndTime,
 
     // AI 配置
     @HiveField(42) @JsonKey(name: 'AISensitivity') String? aiSensitivity,
@@ -94,7 +98,9 @@ class DeviceModel with _$DeviceModel {
     // 电话和错误
     @HiveField(60) @JsonKey(name: 'PSTN') String? pstn,
     @HiveField(61) @JsonKey(name: 'TFError') int? tfError,
-    @HiveField(62) @JsonKey(name: 'HumanFrameThreshold') int? humanFrameThreshold,
+    @HiveField(62)
+    @JsonKey(name: 'HumanFrameThreshold')
+    int? humanFrameThreshold,
     @HiveField(63) @JsonKey(name: 'SipRegistered') int? sipRegistered,
     @HiveField(64) @JsonKey(name: 'AlarmSoundLevel') int? alarmSoundLevel,
     @HiveField(65) @JsonKey(name: 'IsAuto911Call') int? isAuto911Call,
@@ -104,9 +110,7 @@ class DeviceModel with _$DeviceModel {
     @HiveField(67)
     @JsonKey(name: 'PushConfig')
     Map<String, dynamic>? pushConfig,
-    @HiveField(68)
-    @JsonKey(name: 'PicInfo')
-    Map<String, dynamic>? picInfo,
+    @HiveField(68) @JsonKey(name: 'PicInfo') Map<String, dynamic>? picInfo,
   }) = _DeviceModel;
 
   const DeviceModel._();
@@ -139,6 +143,15 @@ class DeviceModel with _$DeviceModel {
 
   /// 是否为摄像头类型
   bool get isCamera => deviceType == 'camera';
+
+  /// 是否为门磁类型
+  bool get isDoor => deviceType == 'door';
+
+  /// 是否为红外探测器类型
+  bool get isMotion => deviceType == 'motion';
+
+  /// 是否为平安通类型
+  bool get isHelpcall => deviceType == 'helpcall';
 
   /// 是否为传感器类型（红外探测器/门磁/平安通）
   bool get isSensor =>

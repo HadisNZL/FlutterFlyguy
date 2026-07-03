@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/colors.dart';
 import '../../core/utils/app_logger.dart';
+import '../../models/device/device_model.dart';
 import '../../models/login_init/defense_area_model.dart';
 import '../../providers/global/global_auth_provider.dart';
 import '../../providers/global/global_devices_provider.dart';
+import '../../widgets/app_image.dart';
+import '../../widgets/app_smart_refresher.dart';
 import '../../widgets/defense_area_drawer.dart';
 import 'providers/device_provider.dart';
 
@@ -123,24 +126,45 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Column(
       children: [
         _buildHeaderWithModeSelector(context, areaName),
+        const SizedBox(height: 10),
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                _buildDeviceList(),
-                const SizedBox(height: 16),
-                _buildCameraPreview(),
-                const SizedBox(height: 16),
-                _buildAddDevice(),
-                const SizedBox(height: 80),
-              ],
+          child: AppSmartRefresher(
+            onRefresh: _handleRefresh,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 6),
+                  _buildDeviceList(),
+                  // const SizedBox(height: 16),
+                  _buildCameraPreview(),
+                  const SizedBox(height: 16),
+                  _buildAddDevice(),
+                  const SizedBox(height: 80),
+                ],
+              ),
             ),
           ),
         ),
       ],
     );
+  }
+
+  /// 处理下拉刷新
+  Future<void> _handleRefresh() async {
+    AppLogger.d('🔄 用户触发下拉刷新', tag: LogTag.device);
+    try {
+      await ref.read(deviceProvider.notifier).refresh();
+      AppLogger.d('✅ 下拉刷新成功', tag: LogTag.device);
+    } catch (e, stackTrace) {
+      // 静默失败，不影响用户体验
+      AppLogger.e(
+        '❌ 下拉刷新失败',
+        tag: LogTag.device,
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   Widget _buildHeaderWithModeSelector(BuildContext context, String areaName) {
@@ -272,7 +296,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
         return Container(
           width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          margin: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -294,11 +318,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     .map(
                       (device) => Padding(
                         padding: const EdgeInsets.only(right: 12),
-                        child: _buildDeviceCard(
-                          device.location,
-                          _getDeviceIcon(device.deviceType),
-                          device.status,
-                        ),
+                        child: _buildDeviceCard(device), // ← 传递完整 device
                       ),
                     )
                     .toList(),
@@ -317,13 +337,20 @@ class _HomePageState extends ConsumerState<HomePage> {
       case 'door':
         return Icons.sensor_door;
       case 'helpcall':
-        return Icons.wifi;
+        return Icons.wifi; // 假设平安通使用 WiFiCalling 图标
       default:
         return Icons.devices;
     }
   }
 
-  Widget _buildDeviceCard(String name, IconData icon, String? status) {
+  Widget _buildDeviceCard(DeviceModel device) {
+    // 判断是否离线
+    final isOffline = !device.isOnline;
+    // 判断是否为门磁设备
+    final isDoor = device.isDoor;
+    // 获取设备图标
+    final icon = _getDeviceIcon(device.deviceType);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -336,33 +363,16 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
           child: Stack(
             children: [
-              Center(child: Icon(icon, color: AppColors.color666666, size: 28)),
-              if (status != null)
-                Positioned(
-                  bottom: 4,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        status,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+              Center(child: Icon(icon, color: AppColors.color666666, size: 22)),
+              // 底部状态显示
+              Positioned(
+                bottom: 4,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: _buildDeviceStatus(isDoor, isOffline, device.isOpen),
                 ),
+              ),
             ],
           ),
         ),
@@ -370,7 +380,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         SizedBox(
           width: 60,
           child: Text(
-            name,
+            device.location,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.color333333,
@@ -383,6 +393,44 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
       ],
     );
+  }
+
+  /// 构建设备状态显示（门磁状态或离线状态）
+  Widget? _buildDeviceStatus(bool isDoor, bool isOffline, int? isOpen) {
+    // 门磁设备：显示 Open/Closed
+    if (isDoor && isOpen != null) {
+      final isOpenState = isOpen == 1;
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+        decoration: BoxDecoration(
+          color: isOpenState ? AppColors.colorRed : AppColors.color999999,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          isOpenState ? 'OPEN' : 'CLOSED',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 7,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+
+    // 离线设备：显示 WiFi 离线图标
+    if (isOffline) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(Icons.wifi_off, color: Colors.white, size: 10),
+      );
+    }
+
+    // 其他情况不显示
+    return null;
   }
 
   Widget _buildCameraPreview() {
@@ -402,138 +450,15 @@ class _HomePageState extends ConsumerState<HomePage> {
               return _buildAddDevicePlaceholder(title: '添加摄像头');
             }
 
-            // 展示第一个摄像头
-            final camera = cameraDevices.first;
+            // 垂直列表展示所有摄像头
+            return Column(
+              children: cameraDevices.asMap().entries.map((entry) {
+                final index = entry.key;
+                final camera = entry.value;
+                final isLast = index == cameraDevices.length - 1;
 
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.6),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.play_arrow,
-                              color: Colors.white,
-                              size: 40,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: 12,
-                          top: 12,
-                          child: Text(
-                            camera.location,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              shadows: [
-                                Shadow(color: Colors.black, blurRadius: 4),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 12,
-                          top: 12,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: camera.isOnline
-                                  ? Colors.green
-                                  : Colors.red,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              camera.isOnline ? '在线' : '离线',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            camera.location,
-                            style: const TextStyle(
-                              color: AppColors.color333333,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.colorF5F5F5,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            '24H',
-                            style: TextStyle(
-                              color: AppColors.color666666,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.colorF5F5F5,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.cloud_outlined,
-                            color: AppColors.color666666,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                return _buildCameraCard(camera, isLast);
+              }).toList(),
             );
           },
           // loading 和 error 状态都显示默认占位
@@ -541,6 +466,134 @@ class _HomePageState extends ConsumerState<HomePage> {
           error: (error, stack) => _buildAddDevicePlaceholder(title: '添加摄像头'),
         );
       },
+    );
+  }
+
+  /// 构建单个摄像头卡片
+  Widget _buildCameraCard(DeviceModel camera, bool isLast) {
+    return Container(
+      margin: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        bottom: isLast ? 0 : 16, // 最后一个不加底部间距
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // 摄像头预览区域
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: Stack(
+              children: [
+                // 摄像头截图（16:9 宽高比 + 自动 token）
+                AppImage.camera(imageUrl: camera.picInfoModel?.picName),
+                // 播放按钮
+                Positioned.fill(
+                  child: Center(
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
+                  ),
+                ),
+                // 在线状态标签（右上角）
+                Positioned(
+                  right: 12,
+                  top: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: camera.isOnline ? Colors.green : Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      camera.isOnline ? '在线' : '离线',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 摄像头信息区域
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                // 摄像头名称
+                Expanded(
+                  child: Text(
+                    camera.location,
+                    style: const TextStyle(
+                      color: AppColors.color333333,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                // 24H 标签
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.colorF5F5F5,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    '24H',
+                    style: TextStyle(
+                      color: AppColors.color666666,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // 云存储图标
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.colorF5F5F5,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.cloud_outlined,
+                    color: AppColors.color666666,
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

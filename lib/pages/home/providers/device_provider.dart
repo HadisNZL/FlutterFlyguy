@@ -106,14 +106,26 @@ class Device extends _$Device {
 
   /// 手动刷新
   Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
+    // 下拉刷新时不设置 loading 状态，避免 UI 闪烁
+    // 保持原数据显示，刷新完成后平滑更新
+    try {
       final currentAreaId = ref.read(currentAreaIdProvider);
       final devices =
           await ref.read(deviceRepositoryProvider).refreshDevices(currentAreaId);
       _updateMemoryState(currentAreaId, devices);
-      return devices;
-    });
+
+      // 直接更新数据，不经过 loading 状态
+      state = AsyncValue.data(devices);
+    } catch (e, stackTrace) {
+      // 刷新失败，保持原数据不变
+      AppLogger.e(
+        '❌ 刷新失败，保持原数据',
+        tag: LogTag.device,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      // 不改变 state，用户仍能看到旧数据
+    }
   }
 
   /// 获取摄像头设备
