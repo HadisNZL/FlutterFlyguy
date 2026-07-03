@@ -923,9 +923,52 @@ UI 从内存读取 (<1ms) → 瞬间显示
 
 ### 10.7 性能优化历史
 
-| 时间 | 优化内容 | 效果 | 提交 |
-|-----|---------|------|------|
-| 2025-01-15 | DeviceProvider 三级缓存优化 | 减少 250ms，提升 83% | - |
+| 时间 | 优化内容 | 效果 | 关键改动 |
+|-----|---------|------|---------|
+| 2025-01-15 | DeviceProvider 三级缓存优化 | 减少 250ms，提升 83% | 内存优先 + Hive 缓存 + 后台刷新 |
+| 2026-07-03 | 图片加载优化 | 消除闪白，提升 50% | TokenStorage.getTokenSync() 同步获取 token |
+| 2026-07-03 | AppImage 商业级封装 | 统一管理，易维护 | 支持多种图片源 + 自动 token |
+
+### 10.8 图片加载优化详解
+
+#### 问题背景
+冷启动时，摄像头图片加载会出现两次闪白：
+1. 第 1 次闪白：FutureBuilder 等待 token 加载（~50ms）
+2. 第 2 次闪白：CachedNetworkImage 从磁盘加载图片（~60-130ms）
+
+#### 优化方案
+**核心思路**：同步获取 token，消除第 1 次闪白
+
+**关键改动**：
+```dart
+// 优化前：异步获取 token
+Future<Map<String, String>> _getHttpHeaders(WidgetRef ref) async {
+  final token = await ref.read(tokenStorageProvider).getToken();  // 异步
+  return {'Authorization': 'Bearer ${token.accessToken}'};
+}
+
+// 优化后：同步获取 token
+Map<String, String> _getHttpHeadersSync(WidgetRef ref) {
+  final token = ref.read(tokenStorageProvider).getTokenSync();  // 同步
+  return {'Authorization': 'Bearer ${token?.accessToken ?? ''}'};
+}
+```
+
+**前提条件**：
+- Token box 必须在 main() 中预打开
+- `await Hive.openBox<TokenModel>(AppConstants.boxAuthToken);`
+
+**效果对比**：
+| 场景 | 优化前 | 优化后 | 提升 |
+|-----|--------|--------|------|
+| 冷启动（有磁盘缓存） | 2 次闪白 | 1 次闪白 | ✅ 50% |
+| 二次加载（有内存缓存） | 2 次闪白 | 0 次闪白 | ✅ 100% |
+| token 获取时间 | ~50ms | ~1ms | ✅ 98% |
+
+**注意事项**：
+- 磁盘加载的短暂灰色过渡是正常的（~60-130ms）
+- 这是物理限制（磁盘 I/O + 图片解码），无法完全消除
+- 灰色比白色更柔和，视觉过渡更自然
 
 ---
 
@@ -966,3 +1009,253 @@ UI 从内存读取 (<1ms) → 瞬间显示
 2. 选择合适的 tag（优先使用 `LogTag` 预定义常量）
 3. 选择合适的日志级别（debug/info/warning/error）
 
+---
+
+## 12. 全局组件库规范
+
+### 12.1 核心原则
+
+**位置**：`lib/widgets/`
+
+**定位**：全局高频复用的基础小组件，必须具备以下特征：
+- ✅ 跨页面/跨模块复用（至少在 3 个以上地方使用）
+- ✅ 通用性强，不包含业务逻辑
+- ✅ 高度可配置，支持自定义样式
+- ✅ 商业级封装，边界处理完善
+
+### 12.2 已有全局组件
+
+#### AppImage - 商业级图片加载组件
+
+**文件**：`lib/widgets/app_image.dart`
+
+**功能**：统一封装图片加载，支持多种图片源和自动 token 管理
+
+**核心特性**：
+- ✅ 自动缓存（内存 + 磁盘）
+- ✅ 自动添加 token header（同步获取，无闪白）
+- ✅ 统一的占位和错误处理
+- ✅ 支持网络图片、本地资源图片
+- ✅ 性能优化（内存限制、渐进式加载）
+
+**使用示例**：
+```dart
+// 网络图片（自动加 token）
+AppImage.network(imageUrl: url)
+
+// 网络图片（不加 token）
+AppImage.networkWithoutToken(imageUrl: url)
+
+// 本地资源图片
+AppImage.asset('assets/images/logo.png')
+
+// 摄像头专用（16:9 + 自动 token）
+AppImage.camera(imageUrl: camera.picInfoModel?.picName)
+```
+
+**技术细节**：
+- 使用 `cached_network_image` 实现三级缓存
+- 同步获取 token（依赖 `TokenStorage.getTokenSync()`）
+- 灰色 placeholder 替代白色，优化视觉过渡
+- 支持自定义 placeholder 和 errorWidget
+
+**注意事项**：
+- Token box 必须在 main() 中预打开
+- 图片加载时的短暂灰色过渡是正常的（磁盘 I/O 需要时间）
+- 不要尝试完全消除过渡，这是物理限制
+
+#### AppSmartRefresher - 统一下拉刷新组件
+
+**文件**：`lib/widgets/app_smart_refresher.dart`
+
+**功能**：封装下拉刷新逻辑，统一全局刷新样式
+
+**使用示例**：
+```dart
+AppSmartRefresher(
+  onRefresh: _handleRefresh,
+  child: ListView(...),
+)
+```
+
+### 12.3 何时创建新的全局组件
+
+#### ✅ 应该创建全局组件的场景：
+1. 该组件在 3 个以上不同页面/模块中使用
+2. 该组件是纯 UI 组件，不包含业务逻辑
+3. 该组件需要统一样式和行为
+4. 该组件具有通用性，可配置性强
+
+**示例**：
+- 统一的按钮样式（AppButton）
+- 统一的输入框样式（AppTextField）
+- 统一的卡片样式（AppCard）
+- 统一的加载指示器（AppLoadingIndicator）
+
+#### ❌ 不应该创建全局组件的场景：
+1. 只在单个页面使用的组件 → 放在页面内部
+2. 包含业务逻辑的组件 → 放在对应模块
+3. 临时性的组件 → 不要过早抽象
+
+**示例**：
+- 用户个人资料卡片（只在个人中心用） → `pages/profile/widgets/`
+- 设备列表项（只在设备页面用） → `pages/device/widgets/`
+
+### 12.4 组件命名规范
+
+**格式**：`App + 功能描述`
+
+**示例**：
+- `AppImage` - 图片组件
+- `AppButton` - 按钮组件
+- `AppCard` - 卡片组件
+- `AppSmartRefresher` - 刷新组件
+
+**原则**：
+- 使用 `App` 前缀区分全局组件和第三方组件
+- 功能描述要清晰，避免缩写
+- 使用大驼峰命名法
+
+### 12.5 组件设计原则
+
+#### 1. 高内聚，低耦合
+```dart
+// ✅ 好的设计：组件独立，不依赖外部状态
+class AppImage extends ConsumerWidget {
+  final String? imageUrl;
+  final Widget? placeholder;
+  
+  // 内部处理 token 获取
+  Map<String, String> _getHeaders(WidgetRef ref) { ... }
+}
+
+// ❌ 坏的设计：依赖外部传入的复杂状态
+class AppImage extends StatelessWidget {
+  final UserState userState;  // 不应该依赖业务状态
+  final AuthProvider authProvider;  // 不应该依赖业务 Provider
+}
+```
+
+#### 2. 灵活可配置
+```dart
+// ✅ 好的设计：支持自定义
+AppImage.network(
+  imageUrl: url,
+  placeholder: CustomPlaceholder(),  // 可选
+  errorWidget: CustomError(),  // 可选
+)
+
+// ❌ 坏的设计：写死样式
+AppImage(url)  // 无法自定义
+```
+
+#### 3. 边界处理完善
+```dart
+// ✅ 好的设计：处理所有边界情况
+Widget _buildNetworkImage(WidgetRef ref) {
+  if (imageUrl == null || imageUrl!.isEmpty) {
+    return errorWidget ?? _buildDefaultErrorWidget();
+  }
+  // ...
+}
+
+// ❌ 坏的设计：未处理空值
+Widget _buildNetworkImage(String imageUrl) {
+  return CachedNetworkImage(imageUrl: imageUrl);  // 可能崩溃
+}
+```
+
+#### 4. 文档注释完善
+```dart
+/// 商业级图片加载组件
+///
+/// 统一封装图片加载，支持多种图片源和自动 token 管理
+///
+/// 特性：
+/// - 自动缓存（内存 + 磁盘）
+/// - 自动添加 token header
+/// - 统一的占位和错误处理
+///
+/// 使用示例：
+/// ```dart
+/// AppImage.network(imageUrl: url)
+/// ```
+class AppImage extends ConsumerWidget {
+  // ...
+}
+```
+
+---
+
+## 13. DeviceModel 设计规范
+
+### 13.1 设备类型判断
+
+**位置**：`lib/models/device/device_model.dart`
+
+**原则**：使用 getter 封装设备类型判断逻辑，避免在业务代码中直接字符串比较
+
+#### 已有的 getter：
+
+```dart
+// 连接状态
+bool get isOnline => connectionState == 'online';
+
+// 设备类型
+bool get isCamera => deviceType == 'camera';      // 摄像头
+bool get isDoor => deviceType == 'door';          // 门磁
+bool get isMotion => deviceType == 'motion';      // 红外探测器
+bool get isHelpcall => deviceType == 'helpcall';  // 平安通
+
+// 组合类型
+bool get isSensor =>
+    deviceType == 'motion' ||
+    deviceType == 'door' ||
+    deviceType == 'helpcall';  // 传感器（包含以上三种）
+```
+
+#### 使用规范：
+
+```dart
+// ✅ 推荐：使用 getter
+if (device.isCamera) { ... }
+if (device.isDoor) { ... }
+if (device.isOnline) { ... }
+
+// ❌ 不推荐：直接字符串比较
+if (device.deviceType == 'camera') { ... }
+if (device.connectionState == 'online') { ... }
+```
+
+#### 优势：
+- ✅ 代码可读性更好（`device.isCamera` vs `device.deviceType == 'camera'`）
+- ✅ 类型安全（拼写错误会在编译期发现）
+- ✅ 易于维护（修改只需一处）
+- ✅ 统一规范（全项目使用相同方式）
+
+### 13.2 添加新的设备类型
+
+当需要支持新的设备类型时：
+
+1. 在 DeviceModel 添加对应的 getter
+2. 如果属于传感器，更新 `isSensor` getter
+3. 全项目搜索字符串比较，替换为 getter
+
+**示例**：
+```dart
+// 1. 添加新类型
+bool get isSmoke => deviceType == 'smoke';  // 烟感
+
+// 2. 更新 isSensor（如果是传感器）
+bool get isSensor =>
+    deviceType == 'motion' ||
+    deviceType == 'door' ||
+    deviceType == 'helpcall' ||
+    deviceType == 'smoke';  // 新增
+
+// 3. 替换旧代码
+// 旧：if (device.deviceType == 'smoke')
+// 新：if (device.isSmoke)
+```
+
+---
