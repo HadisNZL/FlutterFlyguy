@@ -158,4 +158,15 @@ class DeviceModel with _$DeviceModel {
       deviceType == 'motion' ||
       deviceType == 'door' ||
       deviceType == 'helpcall';
+
+  // ==================== 摄像头厂商判断 ====================
+
+  /// 是否为 Aspen 厂商
+  bool get isAspen => oem?.toLowerCase().trim() == 'aspen';
+
+  /// 是否为 Ezviz（萤石）厂商
+  bool get isEzviz => oem?.toLowerCase().trim() == 'ezviz';
+
+  /// 是否为 Hualai（华来）厂商
+  bool get isHualai => oem?.toLowerCase().trim() == 'hualai';
 }

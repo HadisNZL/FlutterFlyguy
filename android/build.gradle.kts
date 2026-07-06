@@ -2,6 +2,11 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // HL Maven 仓库
+        maven {
+            url = uri("https://hualai-foreign-maven.hualaikeji.com/repository/smart_group/")
+            isAllowInsecureProtocol = false
+        }
     }
 }
 

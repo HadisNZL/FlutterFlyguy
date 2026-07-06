@@ -11,6 +11,9 @@ class AppConstants {
   /// 登录页路由
   static const String routeLogin = '/login';
 
+  /// 摄像头直播页路由
+  static const String routeCameraLive = '/camera/live';
+
   /// ==================== 路由参数 ====================
 
   /// extra 参数：是否来自登录页面

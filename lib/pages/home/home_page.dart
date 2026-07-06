@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/colors.dart';
 import '../../core/utils/app_logger.dart';
 import '../../models/device/device_model.dart';
@@ -471,7 +473,12 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   /// 构建单个摄像头卡片
   Widget _buildCameraCard(DeviceModel camera, bool isLast) {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        // 点击摄像头跳转到直播页面
+        context.push(AppConstants.routeCameraLive, extra: camera);
+      },
+      child: Container(
       margin: EdgeInsets.only(
         left: 16,
         right: 16,
@@ -593,6 +600,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

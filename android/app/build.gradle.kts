@@ -43,3 +43,26 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Aspen 摄像头 SDK (本地 AAR)
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar", "*.jar"))))
+
+    // HL SDK - P2P 和媒体播放（排除老版本 Support Library）
+    implementation("com.hl.smartHome:CMDIml:1.1.11") {
+        exclude(group = "com.android.support")
+    }
+    implementation("com.hl.smartHome:MediaIml:1.0.124") {
+        exclude(group = "com.android.support")
+    }
+    implementation("com.hl.smartHome:StationCoreIml:1.1.3") {
+        exclude(group = "com.android.support")
+    }
+    implementation("com.hl.smartHome:SYConnectIml:1.1.4") {
+        exclude(group = "com.android.support")
+    }
+
+    // AndroidX 依赖
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+}
