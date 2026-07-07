@@ -48,7 +48,7 @@ class AspenCameraView(
         private const val TAG = "AspenCameraView"
         private const val PLAY_MODE_LIVE = 0
 
-        private const val DELAY_SDK_INIT: Long = 300
+        private const val DELAY_SDK_INIT: Long = 400
         private const val DELAY_P2P_INIT: Long = 800
         private const val DELAY_PLAY_INIT: Long = 1100
     }
@@ -131,11 +131,11 @@ class AspenCameraView(
                                     Log.d(TAG, "P2P: 设备服务器连接已销毁，需要重新初始化")
 
                                     // EventChannel: 发送错误到 Flutter
-                                    eventHandler.sendPlayerError(
-                                        "P2P_NOT_INITIALIZED",
-                                        "P2P 连接已销毁",
-                                        null
-                                    )
+//                                    eventHandler.sendPlayerError(
+//                                        "P2P_NOT_INITIALIZED",
+//                                        "P2P 连接已销毁",
+//                                        null
+//                                    )
                                 }
 
                                 PlayEventCode.ERROR_PPCS_INVALID_ID -> {

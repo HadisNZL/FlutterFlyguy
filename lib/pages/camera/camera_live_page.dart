@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/app_logger.dart';
 import '../../models/device/device_model.dart';
+import '../../widgets/app_image.dart';
+import '../../widgets/center_expand_loading_bar.dart';
 import 'providers/camera_live_provider.dart';
 
 /// 摄像头直播页面
@@ -30,8 +32,13 @@ class _CameraLivePageState extends ConsumerState<CameraLivePage>
     }
 
     // 初始化播放器
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   ref.read(cameraLiveProvider.notifier).initialize(widget.device);
+    // });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(cameraLiveProvider.notifier).initialize(widget.device);
+      Future.delayed(const Duration(milliseconds: 350), () {
+        ref.read(cameraLiveProvider.notifier).initialize(widget.device);
+      });
     });
   }
 
@@ -124,21 +131,28 @@ class _CameraLivePageState extends ConsumerState<CameraLivePage>
 
     return state.when(
       data: (_) {
-        // 播放中：显示原生视图
-        return ref.read(cameraLiveProvider.notifier).buildPlatformView(context);
+        // 播放中：显示原生视图 + 封面图遮罩
+        final liveNotifier = ref.read(cameraLiveProvider.notifier);
+        final isVideoReady = liveNotifier.isVideoReady;
+
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            // 底层：实时视频（原生视图）
+            liveNotifier.buildPlatformView(context),
+
+            // 顶层：封面图遮罩（带淡入淡出动画）
+            AnimatedOpacity(
+              opacity: isVideoReady ? 0.0 : 1.0,
+              duration: const Duration(milliseconds: 300),
+              child: _buildCoverImage(),
+            ),
+          ],
+        );
       },
       loading: () {
-        // 加载中
-        return const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(color: Colors.white),
-              SizedBox(height: 16),
-              Text('正在连接...', style: TextStyle(color: Colors.white)),
-            ],
-          ),
-        );
+        // 加载中：显示封面图 + Loading
+        return _buildCoverImage();
       },
       error: (error, stack) {
         // 错误状态
@@ -169,6 +183,46 @@ class _CameraLivePageState extends ConsumerState<CameraLivePage>
           ),
         );
       },
+    );
+  }
+
+  /// 构建封面图
+  Widget _buildCoverImage() {
+    // 获取设备截图（使用 picName 构建 URL）
+    final picInfo = widget.device.picInfoModel;
+    final snapshotUrl = picInfo?.picName;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // 封面图（使用 AppImage 加载）
+        AppImage.camera(
+          imageUrl: snapshotUrl,
+          placeholder: _buildPlaceholderImage(),
+          errorWidget: _buildPlaceholderImage(),
+        ),
+
+        // 半透明遮罩
+        Container(color: Colors.black.withValues(alpha: 0.3)),
+
+        // 底部 Loading 条
+        const Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: CenterExpandLoadingBar(),
+        ),
+      ],
+    );
+  }
+
+  /// 构建占位图
+  Widget _buildPlaceholderImage() {
+    return Container(
+      color: Colors.black87,
+      child: const Center(
+        child: Icon(Icons.videocam_off, size: 64, color: Colors.white54),
+      ),
     );
   }
 

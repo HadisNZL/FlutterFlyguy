@@ -1259,3 +1259,251 @@ bool get isSensor =>
 ```
 
 ---
+
+## 14. 原生摄像头 SDK 集成规范
+
+### 14.1 架构概览
+
+Flutter 通过 Platform Channel 与 Android 原生通信，集成第三方摄像头 SDK。
+
+**三层架构**：
+- **Flutter Layer**：`CameraPlayer` 抽象接口 + 厂商实现
+- **Channel Layer**：MethodChannel（指令）+ EventChannel（事件）+ PlatformView（视图）
+- **Native Layer**：Handler（通道管理）+ ViewFactory（视图工厂）+ View（SDK 封装）
+
+**当前支持**：Aspen（乔安威视 JovisionPlayer SDK）  
+**待支持**：Ezviz（萤石）、Hualai（华来）
+
+---
+
+### 14.2 通信协议
+
+#### MethodChannel: `camera/{oem}`
+**用途**：Flutter → Android 指令下发（同步调用）
+
+**方法**：
+- `initialize(deviceId, p2pId, p2pInitString, channelNo)` - 初始化播放器
+- `play()` - 开始播放
+- `pause()` - 暂停播放
+- `dispose()` - 销毁播放器
+- `takeSnapshot()` - 截图（返回路径）
+- `switchQuality(quality)` - 切换清晰度
+
+#### EventChannel: `camera/{oem}/events`
+**用途**：Android → Flutter 事件推送（异步流）
+
+**事件格式**：
+```json
+// 正常事件
+{
+  "type": "p2p" | "player",
+  "event": "connected" | "connecting" | "video_ready",
+  "data": {}
+}
+
+// 错误事件
+{
+  "code": "P2P_TIMEOUT" | "CONNECT_FAILED" | ...,
+  "message": "错误描述",
+  "details": {}
+}
+```
+
+**关键事件**：
+- `{type: "p2p", event: "connected"}` - P2P 连接成功
+- `{type: "player", event: "video_ready"}` - 视频首帧准备好（触发封面图淡出）
+
+#### PlatformView: `camera_view_{oem}`
+**用途**：嵌入原生视图（SurfaceView）到 Flutter
+
+**参数** (`creationParams`)：
+- `deviceId` - 设备 ID（必填）
+- `p2pId` - P2P ID（必填）
+- `p2pInitString` - P2P 初始化字符串（必填）
+- `channelNo` - 通道号（默认 0）
+
+**注意**：参数通过 `creationParams` 传递，不要通过 MethodChannel
+
+---
+
+### 14.3 文件结构
+
+#### Flutter 端
+```
+lib/core/camera/
+  ├─ camera_player.dart              # 抽象接口
+  ├─ camera_player_factory.dart      # 工厂（根据 OEM 创建）
+  └─ impl/
+      ├─ aspen_camera_player.dart    # Aspen 实现
+      ├─ ezviz_camera_player.dart    # 萤石实现（待实现）
+      └─ hualai_camera_player.dart   # 华来实现（待实现）
+
+lib/pages/camera/
+  ├─ camera_live_page.dart           # 直播页面 UI
+  └─ providers/
+      └─ camera_live_provider.dart   # 播放器状态管理
+```
+
+#### Android 端（以 Aspen 为例）
+```
+android/app/src/main/kotlin/com/niu/flyguy/camera/
+  ├─ AspenCameraHandler.kt           # MethodChannel + EventChannel 管理
+  ├─ AspenCameraViewFactory.kt       # PlatformView 工厂 + SDK 回调处理
+  └─ AspenCameraView.kt              # 原生视图（SurfaceView）
+
+android/app/libs/
+  └─ JvPlayerSDK_xxx.aar             # 第三方 SDK
+```
+
+---
+
+### 14.4 关键实现规范
+
+#### 1. 边界清晰标注
+**所有 Platform Channel 交互处必须用注释标注边界**：
+
+```kotlin
+// ═══════════════════════════════════════════════════════════════
+// MethodChannel: Flutter 调用 Android 的入口
+// ═══════════════════════════════════════════════════════════════
+override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) { }
+
+// ═══════════════════════════════════════════════════════════════
+// EventChannel: Android 推送事件到 Flutter
+// ═══════════════════════════════════════════════════════════════
+fun sendPlayerEvent(event: Map<String, Any>) { }
+
+// ═══════════════════════════════════════════════════════════════
+// SDK 回调：第三方 SDK → 本项目封装
+// ═══════════════════════════════════════════════════════════════
+override fun onPlayerEvent(type: Int, state: Int) { }
+```
+
+#### 2. EventChannel 线程安全
+**必须在主线程推送事件**：
+```kotlin
+activity.runOnUiThread {
+    eventSink?.success(event)
+}
+```
+
+#### 3. Stream 订阅管理
+**Flutter 端必须取消订阅，避免内存泄漏**：
+```dart
+StreamSubscription<PlayerEvent>? _eventSubscription;
+
+@override
+void dispose() {
+  _eventSubscription?.cancel();  // ← 必须
+  _player?.dispose();
+  super.dispose();
+}
+```
+
+#### 4. 延迟初始化避免卡顿
+**路由动画期间避免初始化**：
+```dart
+// ✅ 正确：延迟 350ms
+WidgetsBinding.instance.addPostFrameCallback((_) {
+  Future.delayed(Duration(milliseconds: 350), () {
+    initialize();
+  });
+});
+
+// ❌ 错误：立即初始化（卡顿）
+WidgetsBinding.instance.addPostFrameCallback((_) {
+  initialize();
+});
+```
+
+**Android 端避开路由动画**：
+```kotlin
+init {
+    surfaceView.postDelayed({
+        initializePlayer()
+    }, 300)  // 延迟 300ms
+}
+```
+
+#### 5. P2P 参数传递
+**必须通过 PlatformView creationParams 传递**：
+```dart
+// ✅ 正确
+AndroidView(
+  viewType: 'camera_view_aspen',
+  creationParams: {
+    'deviceId': device.oemDeviceId,
+    'p2pId': device.p2pId,           // ← 通过这里
+    'p2pInitString': device.p2pInitString,
+    'channelNo': device.channelNo ?? 0,
+  },
+)
+
+// ❌ 错误：通过 MethodChannel（无法传递到 View）
+await methodChannel.invokeMethod('initialize', {
+  'p2pId': device.p2pId,  // ← 错误
+});
+```
+
+#### 6. 封面图过渡
+**使用 EventChannel `video_ready` 事件控制淡出**：
+```dart
+Stack([
+  PlatformView(),
+  AnimatedOpacity(
+    opacity: isVideoReady ? 0.0 : 1.0,  // ← 根据事件控制
+    duration: Duration(milliseconds: 300),
+    child: CoverImage(),
+  ),
+])
+
+// 监听事件
+if (event.isVideoReady) {
+  _isVideoReady = true;
+  ref.notifyListeners();  // ← 触发 UI 更新
+}
+```
+
+---
+
+### 14.5 添加新厂商支持
+
+#### 步骤概览
+1. Flutter: 实现 `XxxCameraPlayer implements CameraPlayer`
+2. Flutter: 注册到 `CameraPlayerFactory`
+3. Android: 创建 `XxxCameraHandler`（通道管理）
+4. Android: 创建 `XxxCameraViewFactory`（视图工厂）
+5. Android: 创建 `XxxCameraView`（原生视图 + SDK 封装）
+6. Android: 在 `MainActivity` 注册 Channel 和 ViewFactory
+
+#### 必须实现的方法
+- `initialize()`, `play()`, `pause()`, `dispose()`
+- `takeSnapshot()`, `switchQuality()`
+- EventChannel 推送：p2p.connected, player.video_ready
+
+#### 必须遵循的规范
+- 边界清晰标注
+- 线程安全（EventChannel 主线程）
+- 延迟初始化（避免卡顿）
+- P2P 参数通过 creationParams
+
+---
+
+### 14.6 常见问题
+
+#### Q1: 为什么分 MethodChannel 和 EventChannel？
+**A**: MethodChannel 是同步指令（等待结果），EventChannel 是异步事件流（持续推送）。职责分离，避免回调地狱。
+
+#### Q2: P2P 参数为什么通过 creationParams 而不是 MethodChannel？
+**A**: PlatformView 创建时需要参数，MethodChannel 调用时机晚于 View 创建。
+
+#### Q3: 为什么要延迟 300-350ms 初始化？
+**A**: 避开路由动画期间（0-300ms），防止 AndroidView 创建与动画竞争资源导致卡顿。
+
+#### Q4: video_ready 事件的作用？
+**A**: 通知 Flutter 视频首帧已准备好，可以淡出封面图显示实时视频。
+
+#### Q5: 如何避免 Loading 条动画卡顿？
+**A**: 使用 `ValueKey` 保持 Widget 实例稳定，避免 state 变化时重建 AnimationController。
+
+---
