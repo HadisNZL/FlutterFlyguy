@@ -36,7 +36,7 @@ class _CameraLivePageState extends ConsumerState<CameraLivePage>
     //   ref.read(cameraLiveProvider.notifier).initialize(widget.device);
     // });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 350), () {
+      Future.delayed(const Duration(milliseconds: 50), () {
         ref.read(cameraLiveProvider.notifier).initialize(widget.device);
       });
     });

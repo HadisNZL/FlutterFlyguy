@@ -1,0 +1,25 @@
+//
+//  JVSPlayerSDK-Prefix.pch
+//  JVSPlayerSDK 预编译头文件
+//
+//  这个文件会被所有 .m 文件自动导入
+//
+
+#ifndef JVSPlayerSDK_Prefix_pch
+#define JVSPlayerSDK_Prefix_pch
+
+#ifdef __OBJC__
+
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+// ===== 第三方库 =====
+#import <Masonry/Masonry.h>
+
+// ===== JVSPlayerSDK 公共头文件 =====
+#import "Camera/JVSPlayerSDK/JVSSDKHeader.h"
+#import "Camera/JVSPlayerSDK/Network/JVSDefinesHeader.h"
+
+#endif /* __OBJC__ */
+
+#endif /* JVSPlayerSDK_Prefix_pch */

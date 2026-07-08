@@ -8,6 +8,53 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		2C0D196F2FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D196E2FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework */; };
+		2C0D19702FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D196E2FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2C0D19722FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D19712FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework */; };
+		2C0D19732FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D19712FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2C0D19752FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D19742FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework */; };
+		2C0D19762FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D19742FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2C0D1A5E2FFCA9BF00F2E1E2 /* P2PSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A472FFCA9BF00F2E1E2 /* P2PSDK.m */; };
+		2C0D1A602FFCA9BF00F2E1E2 /* BabyPeripheralManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A092FFCA9BF00F2E1E2 /* BabyPeripheralManager.m */; };
+		2C0D1A612FFCA9BF00F2E1E2 /* BabyRhythm.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A0B2FFCA9BF00F2E1E2 /* BabyRhythm.m */; };
+		2C0D1A622FFCA9BF00F2E1E2 /* NSData+HexExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A3F2FFCA9BF00F2E1E2 /* NSData+HexExtension.m */; };
+		2C0D1A632FFCA9BF00F2E1E2 /* SABleWriteDataCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A172FFCA9BF00F2E1E2 /* SABleWriteDataCoder.m */; };
+		2C0D1A642FFCA9BF00F2E1E2 /* BabySpeaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A0D2FFCA9BF00F2E1E2 /* BabySpeaker.m */; };
+		2C0D1A652FFCA9BF00F2E1E2 /* JVSRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A542FFCA9BF00F2E1E2 /* JVSRecorderManager.m */; };
+		2C0D1A672FFCA9BF00F2E1E2 /* BabyOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A072FFCA9BF00F2E1E2 /* BabyOptions.m */; };
+		2C0D1A682FFCA9BF00F2E1E2 /* BabyCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A012FFCA9BF00F2E1E2 /* BabyCallback.m */; };
+		2C0D1A692FFCA9BF00F2E1E2 /* JVSDataLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A4E2FFCA9BF00F2E1E2 /* JVSDataLogManager.m */; };
+		2C0D1A6A2FFCA9BF00F2E1E2 /* JVSWriteData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A272FFCA9BF00F2E1E2 /* JVSWriteData.m */; };
+		2C0D1A6B2FFCA9BF00F2E1E2 /* JVSP2PPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A5B2FFCA9BF00F2E1E2 /* JVSP2PPlayer.m */; };
+		2C0D1A6C2FFCA9BF00F2E1E2 /* SAPeripheralInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A192FFCA9BF00F2E1E2 /* SAPeripheralInfo.m */; };
+		2C0D1A6D2FFCA9BF00F2E1E2 /* JVSFrameInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A212FFCA9BF00F2E1E2 /* JVSFrameInfo.m */; };
+		2C0D1A6E2FFCA9BF00F2E1E2 /* BabyBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D19FF2FFCA9BF00F2E1E2 /* BabyBluetooth.m */; };
+		2C0D1A6F2FFCA9BF00F2E1E2 /* SessionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A382FFCA9BF00F2E1E2 /* SessionModel.m */; };
+		2C0D1A702FFCA9BF00F2E1E2 /* NSString+HexExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A412FFCA9BF00F2E1E2 /* NSString+HexExtension.m */; };
+		2C0D1A712FFCA9BF00F2E1E2 /* SABleReadDataCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A152FFCA9BF00F2E1E2 /* SABleReadDataCoder.m */; };
+		2C0D1A722FFCA9BF00F2E1E2 /* BabyCentralManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A032FFCA9BF00F2E1E2 /* BabyCentralManager.m */; };
+		2C0D1A732FFCA9BF00F2E1E2 /* BabyToy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A0F2FFCA9BF00F2E1E2 /* BabyToy.m */; };
+		2C0D1A742FFCA9BF00F2E1E2 /* BabyDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A052FFCA9BF00F2E1E2 /* BabyDefine.m */; };
+		2C0D1A752FFCA9BF00F2E1E2 /* JVSBluetoothManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A122FFCA9BF00F2E1E2 /* JVSBluetoothManager.m */; };
+		2C0D1A762FFCA9BF00F2E1E2 /* WakeupQueryModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A3C2FFCA9BF00F2E1E2 /* WakeupQueryModel.m */; };
+		2C0D1A772FFCA9BF00F2E1E2 /* UDPRecvEchoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A3A2FFCA9BF00F2E1E2 /* UDPRecvEchoModel.m */; };
+		2C0D1A782FFCA9BF00F2E1E2 /* P2PUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A432FFCA9BF00F2E1E2 /* P2PUtil.m */; };
+		2C0D1A792FFCA9BF00F2E1E2 /* G711Coder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A4C2FFCA9BF00F2E1E2 /* G711Coder.m */; };
+		2C0D1A7A2FFCA9BF00F2E1E2 /* CS2MutableArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A322FFCA9BF00F2E1E2 /* CS2MutableArray.m */; };
+		2C0D1A7B2FFCA9BF00F2E1E2 /* NSError+JVSErrorData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A292FFCA9BF00F2E1E2 /* NSError+JVSErrorData.m */; };
+		2C0D1A7C2FFCA9BF00F2E1E2 /* JVSFrameParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A502FFCA9BF00F2E1E2 /* JVSFrameParser.m */; };
+		2C0D1A7D2FFCA9BF00F2E1E2 /* JVSDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A1E2FFCA9BF00F2E1E2 /* JVSDataRequest.m */; };
+		2C0D1A7E2FFCA9BF00F2E1E2 /* DCSModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A342FFCA9BF00F2E1E2 /* DCSModel.m */; };
+		2C0D1A7F2FFCA9BF00F2E1E2 /* JVSP2PSDKManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A232FFCA9BF00F2E1E2 /* JVSP2PSDKManager.m */; };
+		2C0D1A802FFCA9BF00F2E1E2 /* DIDModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A362FFCA9BF00F2E1E2 /* DIDModel.m */; };
+		2C0D1A812FFCA9BF00F2E1E2 /* JVSReadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A252FFCA9BF00F2E1E2 /* JVSReadData.m */; };
+		2C0D1A822FFCA9BF00F2E1E2 /* JVSBaseRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A1C2FFCA9BF00F2E1E2 /* JVSBaseRequest.m */; };
+		2C0D1A832FFCA9BF00F2E1E2 /* JVSP2PSendDataOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D1A522FFCA9BF00F2E1E2 /* JVSP2PSendDataOperation.m */; };
+		2C0D1A842FFCA9BF00F2E1E2 /* libPPCS_API.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D1A2F2FFCA9BF00F2E1E2 /* libPPCS_API.a */; };
+		2C4B417C2FFCC7800072B602 /* AspenCameraHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4B417A2FFCC7800072B602 /* AspenCameraHandler.swift */; };
+		2C4B417D2FFCC7800072B602 /* AspenCameraViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4B417B2FFCC7800072B602 /* AspenCameraViewFactory.swift */; };
+		2CA483132FFC9D67000B822A /* JVSPlayerSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA483122FFC9D67000B822A /* JVSPlayerSDK.framework */; };
+		2CA483142FFC9D67000B822A /* JVSPlayerSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA483122FFC9D67000B822A /* JVSPlayerSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -37,6 +84,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				2C0D19702FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework in Embed Frameworks */,
+				2C0D19732FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework in Embed Frameworks */,
+				2C0D19762FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework in Embed Frameworks */,
+				2CA483142FFC9D67000B822A /* JVSPlayerSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -47,6 +98,94 @@
 		0DA246469962DF3D52DBFCED /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
+		2C0D196E2FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JVSBasicToolFramework.framework; path = Frameworks/JVSBasicToolFramework.framework; sourceTree = "<group>"; };
+		2C0D19712FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JVSDeviceNetConfigComponent.framework; path = Frameworks/JVSDeviceNetConfigComponent.framework; sourceTree = "<group>"; };
+		2C0D19742FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JVSHttpRequstFrameWork.framework; path = Frameworks/JVSHttpRequstFrameWork.framework; sourceTree = "<group>"; };
+		2C0D19FE2FFCA9BF00F2E1E2 /* BabyBluetooth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyBluetooth.h; sourceTree = "<group>"; };
+		2C0D19FF2FFCA9BF00F2E1E2 /* BabyBluetooth.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyBluetooth.m; sourceTree = "<group>"; };
+		2C0D1A002FFCA9BF00F2E1E2 /* BabyCallback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyCallback.h; sourceTree = "<group>"; };
+		2C0D1A012FFCA9BF00F2E1E2 /* BabyCallback.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyCallback.m; sourceTree = "<group>"; };
+		2C0D1A022FFCA9BF00F2E1E2 /* BabyCentralManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyCentralManager.h; sourceTree = "<group>"; };
+		2C0D1A032FFCA9BF00F2E1E2 /* BabyCentralManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyCentralManager.m; sourceTree = "<group>"; };
+		2C0D1A042FFCA9BF00F2E1E2 /* BabyDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyDefine.h; sourceTree = "<group>"; };
+		2C0D1A052FFCA9BF00F2E1E2 /* BabyDefine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyDefine.m; sourceTree = "<group>"; };
+		2C0D1A062FFCA9BF00F2E1E2 /* BabyOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyOptions.h; sourceTree = "<group>"; };
+		2C0D1A072FFCA9BF00F2E1E2 /* BabyOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyOptions.m; sourceTree = "<group>"; };
+		2C0D1A082FFCA9BF00F2E1E2 /* BabyPeripheralManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyPeripheralManager.h; sourceTree = "<group>"; };
+		2C0D1A092FFCA9BF00F2E1E2 /* BabyPeripheralManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyPeripheralManager.m; sourceTree = "<group>"; };
+		2C0D1A0A2FFCA9BF00F2E1E2 /* BabyRhythm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyRhythm.h; sourceTree = "<group>"; };
+		2C0D1A0B2FFCA9BF00F2E1E2 /* BabyRhythm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyRhythm.m; sourceTree = "<group>"; };
+		2C0D1A0C2FFCA9BF00F2E1E2 /* BabySpeaker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabySpeaker.h; sourceTree = "<group>"; };
+		2C0D1A0D2FFCA9BF00F2E1E2 /* BabySpeaker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabySpeaker.m; sourceTree = "<group>"; };
+		2C0D1A0E2FFCA9BF00F2E1E2 /* BabyToy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BabyToy.h; sourceTree = "<group>"; };
+		2C0D1A0F2FFCA9BF00F2E1E2 /* BabyToy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BabyToy.m; sourceTree = "<group>"; };
+		2C0D1A112FFCA9BF00F2E1E2 /* JVSBluetoothManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSBluetoothManager.h; sourceTree = "<group>"; };
+		2C0D1A122FFCA9BF00F2E1E2 /* JVSBluetoothManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSBluetoothManager.m; sourceTree = "<group>"; };
+		2C0D1A132FFCA9BF00F2E1E2 /* SABleDataCoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SABleDataCoder.h; sourceTree = "<group>"; };
+		2C0D1A142FFCA9BF00F2E1E2 /* SABleReadDataCoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SABleReadDataCoder.h; sourceTree = "<group>"; };
+		2C0D1A152FFCA9BF00F2E1E2 /* SABleReadDataCoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SABleReadDataCoder.m; sourceTree = "<group>"; };
+		2C0D1A162FFCA9BF00F2E1E2 /* SABleWriteDataCoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SABleWriteDataCoder.h; sourceTree = "<group>"; };
+		2C0D1A172FFCA9BF00F2E1E2 /* SABleWriteDataCoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SABleWriteDataCoder.m; sourceTree = "<group>"; };
+		2C0D1A182FFCA9BF00F2E1E2 /* SAPeripheralInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAPeripheralInfo.h; sourceTree = "<group>"; };
+		2C0D1A192FFCA9BF00F2E1E2 /* SAPeripheralInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAPeripheralInfo.m; sourceTree = "<group>"; };
+		2C0D1A1B2FFCA9BF00F2E1E2 /* JVSBaseRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSBaseRequest.h; sourceTree = "<group>"; };
+		2C0D1A1C2FFCA9BF00F2E1E2 /* JVSBaseRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSBaseRequest.m; sourceTree = "<group>"; };
+		2C0D1A1D2FFCA9BF00F2E1E2 /* JVSDataRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSDataRequest.h; sourceTree = "<group>"; };
+		2C0D1A1E2FFCA9BF00F2E1E2 /* JVSDataRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSDataRequest.m; sourceTree = "<group>"; };
+		2C0D1A1F2FFCA9BF00F2E1E2 /* JVSDefinesHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSDefinesHeader.h; sourceTree = "<group>"; };
+		2C0D1A202FFCA9BF00F2E1E2 /* JVSFrameInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSFrameInfo.h; sourceTree = "<group>"; };
+		2C0D1A212FFCA9BF00F2E1E2 /* JVSFrameInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSFrameInfo.m; sourceTree = "<group>"; };
+		2C0D1A222FFCA9BF00F2E1E2 /* JVSP2PSDKManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSP2PSDKManager.h; sourceTree = "<group>"; };
+		2C0D1A232FFCA9BF00F2E1E2 /* JVSP2PSDKManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSP2PSDKManager.m; sourceTree = "<group>"; };
+		2C0D1A242FFCA9BF00F2E1E2 /* JVSReadData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSReadData.h; sourceTree = "<group>"; };
+		2C0D1A252FFCA9BF00F2E1E2 /* JVSReadData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSReadData.m; sourceTree = "<group>"; };
+		2C0D1A262FFCA9BF00F2E1E2 /* JVSWriteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSWriteData.h; sourceTree = "<group>"; };
+		2C0D1A272FFCA9BF00F2E1E2 /* JVSWriteData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSWriteData.m; sourceTree = "<group>"; };
+		2C0D1A282FFCA9BF00F2E1E2 /* NSError+JVSErrorData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSError+JVSErrorData.h"; sourceTree = "<group>"; };
+		2C0D1A292FFCA9BF00F2E1E2 /* NSError+JVSErrorData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSError+JVSErrorData.m"; sourceTree = "<group>"; };
+		2C0D1A2B2FFCA9BF00F2E1E2 /* PPCS_API.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPCS_API.h; sourceTree = "<group>"; };
+		2C0D1A2C2FFCA9BF00F2E1E2 /* PPCS_Error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPCS_Error.h; sourceTree = "<group>"; };
+		2C0D1A2D2FFCA9BF00F2E1E2 /* PPCS_Type.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPCS_Type.h; sourceTree = "<group>"; };
+		2C0D1A2F2FFCA9BF00F2E1E2 /* libPPCS_API.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPPCS_API.a; sourceTree = "<group>"; };
+		2C0D1A312FFCA9BF00F2E1E2 /* CS2MutableArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CS2MutableArray.h; sourceTree = "<group>"; };
+		2C0D1A322FFCA9BF00F2E1E2 /* CS2MutableArray.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CS2MutableArray.m; sourceTree = "<group>"; };
+		2C0D1A332FFCA9BF00F2E1E2 /* DCSModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DCSModel.h; sourceTree = "<group>"; };
+		2C0D1A342FFCA9BF00F2E1E2 /* DCSModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DCSModel.m; sourceTree = "<group>"; };
+		2C0D1A352FFCA9BF00F2E1E2 /* DIDModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DIDModel.h; sourceTree = "<group>"; };
+		2C0D1A362FFCA9BF00F2E1E2 /* DIDModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DIDModel.m; sourceTree = "<group>"; };
+		2C0D1A372FFCA9BF00F2E1E2 /* SessionModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionModel.h; sourceTree = "<group>"; };
+		2C0D1A382FFCA9BF00F2E1E2 /* SessionModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionModel.m; sourceTree = "<group>"; };
+		2C0D1A392FFCA9BF00F2E1E2 /* UDPRecvEchoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UDPRecvEchoModel.h; sourceTree = "<group>"; };
+		2C0D1A3A2FFCA9BF00F2E1E2 /* UDPRecvEchoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UDPRecvEchoModel.m; sourceTree = "<group>"; };
+		2C0D1A3B2FFCA9BF00F2E1E2 /* WakeupQueryModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WakeupQueryModel.h; sourceTree = "<group>"; };
+		2C0D1A3C2FFCA9BF00F2E1E2 /* WakeupQueryModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WakeupQueryModel.m; sourceTree = "<group>"; };
+		2C0D1A3E2FFCA9BF00F2E1E2 /* NSData+HexExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+HexExtension.h"; sourceTree = "<group>"; };
+		2C0D1A3F2FFCA9BF00F2E1E2 /* NSData+HexExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+HexExtension.m"; sourceTree = "<group>"; };
+		2C0D1A402FFCA9BF00F2E1E2 /* NSString+HexExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+HexExtension.h"; sourceTree = "<group>"; };
+		2C0D1A412FFCA9BF00F2E1E2 /* NSString+HexExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+HexExtension.m"; sourceTree = "<group>"; };
+		2C0D1A422FFCA9BF00F2E1E2 /* P2PUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = P2PUtil.h; sourceTree = "<group>"; };
+		2C0D1A432FFCA9BF00F2E1E2 /* P2PUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = P2PUtil.m; sourceTree = "<group>"; };
+		2C0D1A452FFCA9BF00F2E1E2 /* JVSSDKHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSSDKHeader.h; sourceTree = "<group>"; };
+		2C0D1A462FFCA9BF00F2E1E2 /* P2PSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = P2PSDK.h; sourceTree = "<group>"; };
+		2C0D1A472FFCA9BF00F2E1E2 /* P2PSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = P2PSDK.m; sourceTree = "<group>"; };
+		2C0D1A482FFCA9BF00F2E1E2 /* P2PSDKHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = P2PSDKHeader.h; sourceTree = "<group>"; };
+		2C0D1A492FFCA9BF00F2E1E2 /* ToolsMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToolsMacro.h; sourceTree = "<group>"; };
+		2C0D1A4B2FFCA9BF00F2E1E2 /* G711Coder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = G711Coder.h; sourceTree = "<group>"; };
+		2C0D1A4C2FFCA9BF00F2E1E2 /* G711Coder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = G711Coder.m; sourceTree = "<group>"; };
+		2C0D1A4D2FFCA9BF00F2E1E2 /* JVSDataLogManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSDataLogManager.h; sourceTree = "<group>"; };
+		2C0D1A4E2FFCA9BF00F2E1E2 /* JVSDataLogManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSDataLogManager.m; sourceTree = "<group>"; };
+		2C0D1A4F2FFCA9BF00F2E1E2 /* JVSFrameParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSFrameParser.h; sourceTree = "<group>"; };
+		2C0D1A502FFCA9BF00F2E1E2 /* JVSFrameParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSFrameParser.m; sourceTree = "<group>"; };
+		2C0D1A512FFCA9BF00F2E1E2 /* JVSP2PSendDataOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSP2PSendDataOperation.h; sourceTree = "<group>"; };
+		2C0D1A522FFCA9BF00F2E1E2 /* JVSP2PSendDataOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSP2PSendDataOperation.m; sourceTree = "<group>"; };
+		2C0D1A532FFCA9BF00F2E1E2 /* JVSRecorderManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSRecorderManager.h; sourceTree = "<group>"; };
+		2C0D1A542FFCA9BF00F2E1E2 /* JVSRecorderManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSRecorderManager.m; sourceTree = "<group>"; };
+		2C0D1A5A2FFCA9BF00F2E1E2 /* JVSP2PPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSP2PPlayer.h; sourceTree = "<group>"; };
+		2C0D1A5B2FFCA9BF00F2E1E2 /* JVSP2PPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JVSP2PPlayer.m; sourceTree = "<group>"; };
+		2C0D1A5C2FFCA9BF00F2E1E2 /* JVSSDKHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JVSSDKHeader.h; sourceTree = "<group>"; };
+		2C4B417A2FFCC7800072B602 /* AspenCameraHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspenCameraHandler.swift; sourceTree = "<group>"; };
+		2C4B417B2FFCC7800072B602 /* AspenCameraViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspenCameraViewFactory.swift; sourceTree = "<group>"; };
+		2CA483122FFC9D67000B822A /* JVSPlayerSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JVSPlayerSDK.framework; path = Frameworks/JVSPlayerSDK.framework; sourceTree = "<group>"; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -85,7 +224,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
+				2CA483132FFC9D67000B822A /* JVSPlayerSDK.framework in Frameworks */,
 				B36259320680A983BD2F15DD /* Pods_Runner.framework in Frameworks */,
+				2C0D1A842FFCA9BF00F2E1E2 /* libPPCS_API.a in Frameworks */,
+				2C0D19752FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework in Frameworks */,
+				2C0D19722FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework in Frameworks */,
+				2C0D196F2FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +247,175 @@
 				794E8CA640D1987D165B855E /* Pods-RunnerTests.profile.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		2C0D19532FFCA35A00F2E1E2 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A1A2FFCA9BF00F2E1E2 /* JVSBluetoothComponent */,
+				2C0D1A5D2FFCA9BF00F2E1E2 /* JVSPlayerSDK */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		2C0D1A102FFCA9BF00F2E1E2 /* BabyBluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D19FE2FFCA9BF00F2E1E2 /* BabyBluetooth.h */,
+				2C0D19FF2FFCA9BF00F2E1E2 /* BabyBluetooth.m */,
+				2C0D1A002FFCA9BF00F2E1E2 /* BabyCallback.h */,
+				2C0D1A012FFCA9BF00F2E1E2 /* BabyCallback.m */,
+				2C0D1A022FFCA9BF00F2E1E2 /* BabyCentralManager.h */,
+				2C0D1A032FFCA9BF00F2E1E2 /* BabyCentralManager.m */,
+				2C0D1A042FFCA9BF00F2E1E2 /* BabyDefine.h */,
+				2C0D1A052FFCA9BF00F2E1E2 /* BabyDefine.m */,
+				2C0D1A062FFCA9BF00F2E1E2 /* BabyOptions.h */,
+				2C0D1A072FFCA9BF00F2E1E2 /* BabyOptions.m */,
+				2C0D1A082FFCA9BF00F2E1E2 /* BabyPeripheralManager.h */,
+				2C0D1A092FFCA9BF00F2E1E2 /* BabyPeripheralManager.m */,
+				2C0D1A0A2FFCA9BF00F2E1E2 /* BabyRhythm.h */,
+				2C0D1A0B2FFCA9BF00F2E1E2 /* BabyRhythm.m */,
+				2C0D1A0C2FFCA9BF00F2E1E2 /* BabySpeaker.h */,
+				2C0D1A0D2FFCA9BF00F2E1E2 /* BabySpeaker.m */,
+				2C0D1A0E2FFCA9BF00F2E1E2 /* BabyToy.h */,
+				2C0D1A0F2FFCA9BF00F2E1E2 /* BabyToy.m */,
+			);
+			path = BabyBluetooth;
+			sourceTree = "<group>";
+		};
+		2C0D1A1A2FFCA9BF00F2E1E2 /* JVSBluetoothComponent */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A102FFCA9BF00F2E1E2 /* BabyBluetooth */,
+				2C0D1A112FFCA9BF00F2E1E2 /* JVSBluetoothManager.h */,
+				2C0D1A122FFCA9BF00F2E1E2 /* JVSBluetoothManager.m */,
+				2C0D1A132FFCA9BF00F2E1E2 /* SABleDataCoder.h */,
+				2C0D1A142FFCA9BF00F2E1E2 /* SABleReadDataCoder.h */,
+				2C0D1A152FFCA9BF00F2E1E2 /* SABleReadDataCoder.m */,
+				2C0D1A162FFCA9BF00F2E1E2 /* SABleWriteDataCoder.h */,
+				2C0D1A172FFCA9BF00F2E1E2 /* SABleWriteDataCoder.m */,
+				2C0D1A182FFCA9BF00F2E1E2 /* SAPeripheralInfo.h */,
+				2C0D1A192FFCA9BF00F2E1E2 /* SAPeripheralInfo.m */,
+			);
+			path = JVSBluetoothComponent;
+			sourceTree = "<group>";
+		};
+		2C0D1A2A2FFCA9BF00F2E1E2 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A1B2FFCA9BF00F2E1E2 /* JVSBaseRequest.h */,
+				2C0D1A1C2FFCA9BF00F2E1E2 /* JVSBaseRequest.m */,
+				2C0D1A1D2FFCA9BF00F2E1E2 /* JVSDataRequest.h */,
+				2C0D1A1E2FFCA9BF00F2E1E2 /* JVSDataRequest.m */,
+				2C0D1A1F2FFCA9BF00F2E1E2 /* JVSDefinesHeader.h */,
+				2C0D1A202FFCA9BF00F2E1E2 /* JVSFrameInfo.h */,
+				2C0D1A212FFCA9BF00F2E1E2 /* JVSFrameInfo.m */,
+				2C0D1A222FFCA9BF00F2E1E2 /* JVSP2PSDKManager.h */,
+				2C0D1A232FFCA9BF00F2E1E2 /* JVSP2PSDKManager.m */,
+				2C0D1A242FFCA9BF00F2E1E2 /* JVSReadData.h */,
+				2C0D1A252FFCA9BF00F2E1E2 /* JVSReadData.m */,
+				2C0D1A262FFCA9BF00F2E1E2 /* JVSWriteData.h */,
+				2C0D1A272FFCA9BF00F2E1E2 /* JVSWriteData.m */,
+				2C0D1A282FFCA9BF00F2E1E2 /* NSError+JVSErrorData.h */,
+				2C0D1A292FFCA9BF00F2E1E2 /* NSError+JVSErrorData.m */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		2C0D1A2E2FFCA9BF00F2E1E2 /* Include */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A2B2FFCA9BF00F2E1E2 /* PPCS_API.h */,
+				2C0D1A2C2FFCA9BF00F2E1E2 /* PPCS_Error.h */,
+				2C0D1A2D2FFCA9BF00F2E1E2 /* PPCS_Type.h */,
+			);
+			path = Include;
+			sourceTree = "<group>";
+		};
+		2C0D1A302FFCA9BF00F2E1E2 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A2F2FFCA9BF00F2E1E2 /* libPPCS_API.a */,
+			);
+			path = Lib;
+			sourceTree = "<group>";
+		};
+		2C0D1A3D2FFCA9BF00F2E1E2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A312FFCA9BF00F2E1E2 /* CS2MutableArray.h */,
+				2C0D1A322FFCA9BF00F2E1E2 /* CS2MutableArray.m */,
+				2C0D1A332FFCA9BF00F2E1E2 /* DCSModel.h */,
+				2C0D1A342FFCA9BF00F2E1E2 /* DCSModel.m */,
+				2C0D1A352FFCA9BF00F2E1E2 /* DIDModel.h */,
+				2C0D1A362FFCA9BF00F2E1E2 /* DIDModel.m */,
+				2C0D1A372FFCA9BF00F2E1E2 /* SessionModel.h */,
+				2C0D1A382FFCA9BF00F2E1E2 /* SessionModel.m */,
+				2C0D1A392FFCA9BF00F2E1E2 /* UDPRecvEchoModel.h */,
+				2C0D1A3A2FFCA9BF00F2E1E2 /* UDPRecvEchoModel.m */,
+				2C0D1A3B2FFCA9BF00F2E1E2 /* WakeupQueryModel.h */,
+				2C0D1A3C2FFCA9BF00F2E1E2 /* WakeupQueryModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		2C0D1A442FFCA9BF00F2E1E2 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A3E2FFCA9BF00F2E1E2 /* NSData+HexExtension.h */,
+				2C0D1A3F2FFCA9BF00F2E1E2 /* NSData+HexExtension.m */,
+				2C0D1A402FFCA9BF00F2E1E2 /* NSString+HexExtension.h */,
+				2C0D1A412FFCA9BF00F2E1E2 /* NSString+HexExtension.m */,
+				2C0D1A422FFCA9BF00F2E1E2 /* P2PUtil.h */,
+				2C0D1A432FFCA9BF00F2E1E2 /* P2PUtil.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		2C0D1A4A2FFCA9BF00F2E1E2 /* P2P */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A2E2FFCA9BF00F2E1E2 /* Include */,
+				2C0D1A302FFCA9BF00F2E1E2 /* Lib */,
+				2C0D1A3D2FFCA9BF00F2E1E2 /* Model */,
+				2C0D1A442FFCA9BF00F2E1E2 /* Utils */,
+				2C0D1A452FFCA9BF00F2E1E2 /* JVSSDKHeader.h */,
+				2C0D1A462FFCA9BF00F2E1E2 /* P2PSDK.h */,
+				2C0D1A472FFCA9BF00F2E1E2 /* P2PSDK.m */,
+				2C0D1A482FFCA9BF00F2E1E2 /* P2PSDKHeader.h */,
+				2C0D1A492FFCA9BF00F2E1E2 /* ToolsMacro.h */,
+			);
+			path = P2P;
+			sourceTree = "<group>";
+		};
+		2C0D1A552FFCA9BF00F2E1E2 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A4B2FFCA9BF00F2E1E2 /* G711Coder.h */,
+				2C0D1A4C2FFCA9BF00F2E1E2 /* G711Coder.m */,
+				2C0D1A4D2FFCA9BF00F2E1E2 /* JVSDataLogManager.h */,
+				2C0D1A4E2FFCA9BF00F2E1E2 /* JVSDataLogManager.m */,
+				2C0D1A4F2FFCA9BF00F2E1E2 /* JVSFrameParser.h */,
+				2C0D1A502FFCA9BF00F2E1E2 /* JVSFrameParser.m */,
+				2C0D1A512FFCA9BF00F2E1E2 /* JVSP2PSendDataOperation.h */,
+				2C0D1A522FFCA9BF00F2E1E2 /* JVSP2PSendDataOperation.m */,
+				2C0D1A532FFCA9BF00F2E1E2 /* JVSRecorderManager.h */,
+				2C0D1A542FFCA9BF00F2E1E2 /* JVSRecorderManager.m */,
+			);
+			path = Tools;
+			sourceTree = "<group>";
+		};
+		2C0D1A5D2FFCA9BF00F2E1E2 /* JVSPlayerSDK */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D1A2A2FFCA9BF00F2E1E2 /* Network */,
+				2C0D1A4A2FFCA9BF00F2E1E2 /* P2P */,
+				2C0D1A552FFCA9BF00F2E1E2 /* Tools */,
+				2C0D1A5A2FFCA9BF00F2E1E2 /* JVSP2PPlayer.h */,
+				2C0D1A5B2FFCA9BF00F2E1E2 /* JVSP2PPlayer.m */,
+				2C0D1A5C2FFCA9BF00F2E1E2 /* JVSSDKHeader.h */,
+			);
+			path = JVSPlayerSDK;
 			sourceTree = "<group>";
 		};
 		331C8082294A63A400263BE5 /* RunnerTests */ = {
@@ -149,6 +462,9 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				2C4B417A2FFCC7800072B602 /* AspenCameraHandler.swift */,
+				2C4B417B2FFCC7800072B602 /* AspenCameraViewFactory.swift */,
+				2C0D19532FFCA35A00F2E1E2 /* Camera */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -165,6 +481,10 @@
 		9D267AD5EB24BD3B7D61A5FE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2C0D19742FFCA8D400F2E1E2 /* JVSHttpRequstFrameWork.framework */,
+				2C0D19712FFCA8CA00F2E1E2 /* JVSDeviceNetConfigComponent.framework */,
+				2C0D196E2FFCA8BE00F2E1E2 /* JVSBasicToolFramework.framework */,
+				2CA483122FFC9D67000B822A /* JVSPlayerSDK.framework */,
 				F6B2858F06B8590A123C2BED /* Pods_Runner.framework */,
 				E4D6B621A261089B59AB8C42 /* Pods_RunnerTests.framework */,
 			);
@@ -204,6 +524,7 @@
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
+				18101DC3DD86D878160DF8A8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -247,7 +568,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -281,6 +602,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		18101DC3DD86D878160DF8A8 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		1DA3D207AF75683E5BB15DB8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -374,6 +712,44 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
+				2C0D1A5E2FFCA9BF00F2E1E2 /* P2PSDK.m in Sources */,
+				2C0D1A602FFCA9BF00F2E1E2 /* BabyPeripheralManager.m in Sources */,
+				2C0D1A612FFCA9BF00F2E1E2 /* BabyRhythm.m in Sources */,
+				2C0D1A622FFCA9BF00F2E1E2 /* NSData+HexExtension.m in Sources */,
+				2C0D1A632FFCA9BF00F2E1E2 /* SABleWriteDataCoder.m in Sources */,
+				2C0D1A642FFCA9BF00F2E1E2 /* BabySpeaker.m in Sources */,
+				2C0D1A652FFCA9BF00F2E1E2 /* JVSRecorderManager.m in Sources */,
+				2C0D1A672FFCA9BF00F2E1E2 /* BabyOptions.m in Sources */,
+				2C4B417C2FFCC7800072B602 /* AspenCameraHandler.swift in Sources */,
+				2C4B417D2FFCC7800072B602 /* AspenCameraViewFactory.swift in Sources */,
+				2C0D1A682FFCA9BF00F2E1E2 /* BabyCallback.m in Sources */,
+				2C0D1A692FFCA9BF00F2E1E2 /* JVSDataLogManager.m in Sources */,
+				2C0D1A6A2FFCA9BF00F2E1E2 /* JVSWriteData.m in Sources */,
+				2C0D1A6B2FFCA9BF00F2E1E2 /* JVSP2PPlayer.m in Sources */,
+				2C0D1A6C2FFCA9BF00F2E1E2 /* SAPeripheralInfo.m in Sources */,
+				2C0D1A6D2FFCA9BF00F2E1E2 /* JVSFrameInfo.m in Sources */,
+				2C0D1A6E2FFCA9BF00F2E1E2 /* BabyBluetooth.m in Sources */,
+				2C0D1A6F2FFCA9BF00F2E1E2 /* SessionModel.m in Sources */,
+				2C0D1A702FFCA9BF00F2E1E2 /* NSString+HexExtension.m in Sources */,
+				2C0D1A712FFCA9BF00F2E1E2 /* SABleReadDataCoder.m in Sources */,
+				2C0D1A722FFCA9BF00F2E1E2 /* BabyCentralManager.m in Sources */,
+				2C0D1A732FFCA9BF00F2E1E2 /* BabyToy.m in Sources */,
+				2C0D1A742FFCA9BF00F2E1E2 /* BabyDefine.m in Sources */,
+				2C0D1A752FFCA9BF00F2E1E2 /* JVSBluetoothManager.m in Sources */,
+				2C0D1A762FFCA9BF00F2E1E2 /* WakeupQueryModel.m in Sources */,
+				2C0D1A772FFCA9BF00F2E1E2 /* UDPRecvEchoModel.m in Sources */,
+				2C0D1A782FFCA9BF00F2E1E2 /* P2PUtil.m in Sources */,
+				2C0D1A792FFCA9BF00F2E1E2 /* G711Coder.m in Sources */,
+				2C0D1A7A2FFCA9BF00F2E1E2 /* CS2MutableArray.m in Sources */,
+				2C0D1A7B2FFCA9BF00F2E1E2 /* NSError+JVSErrorData.m in Sources */,
+				2C0D1A7C2FFCA9BF00F2E1E2 /* JVSFrameParser.m in Sources */,
+				2C0D1A7D2FFCA9BF00F2E1E2 /* JVSDataRequest.m in Sources */,
+				2C0D1A7E2FFCA9BF00F2E1E2 /* DCSModel.m in Sources */,
+				2C0D1A7F2FFCA9BF00F2E1E2 /* JVSP2PSDKManager.m in Sources */,
+				2C0D1A802FFCA9BF00F2E1E2 /* DIDModel.m in Sources */,
+				2C0D1A812FFCA9BF00F2E1E2 /* JVSReadData.m in Sources */,
+				2C0D1A822FFCA9BF00F2E1E2 /* JVSBaseRequest.m in Sources */,
+				2C0D1A832FFCA9BF00F2E1E2 /* JVSP2PSendDataOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +820,8 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -468,11 +846,29 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = CXZXV3QU97;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK",
+					"$(PROJECT_DIR)/Frameworks/JVSPlayerSDK.framework/Headers",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK/**",
+				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Runner/Camera\\ 2/JVSPlayerSDK/P2P/Lib",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK/P2P/Lib",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK\\ 2/P2P/Lib",
+				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.niu.flyguy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -488,6 +884,8 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.niu.flyguy.RunnerTests;
@@ -506,6 +904,8 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.niu.flyguy.RunnerTests;
@@ -522,6 +922,8 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.niu.flyguy.RunnerTests;
@@ -570,6 +972,8 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -625,6 +1029,8 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -651,11 +1057,34 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = CXZXV3QU97;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"LINUX=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK",
+					"$(PROJECT_DIR)/Frameworks/JVSPlayerSDK.framework/Headers",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK/**",
+				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Runner/Camera\\ 2/JVSPlayerSDK/P2P/Lib",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK/P2P/Lib",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK\\ 2/P2P/Lib",
+				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.niu.flyguy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -674,11 +1103,29 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = CXZXV3QU97;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Runner/JVSPlayerSDK-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK",
+					"$(PROJECT_DIR)/Frameworks/JVSPlayerSDK.framework/Headers",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK/**",
+				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Runner/Camera\\ 2/JVSPlayerSDK/P2P/Lib",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK/P2P/Lib",
+					"$(PROJECT_DIR)/Runner/Camera/JVSPlayerSDK\\ 2/P2P/Lib",
+				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.niu.flyguy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -723,7 +1170,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
 		};

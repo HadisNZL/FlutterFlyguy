@@ -1,0 +1,6 @@
+framework module JVSBasicToolFramework {
+  umbrella header "JVSBasicToolFramework.h"
+  export *
+
+  module * { export * }
+}

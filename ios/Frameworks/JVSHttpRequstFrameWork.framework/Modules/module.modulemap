@@ -1,0 +1,6 @@
+framework module JVSHttpRequstFrameWork {
+  umbrella header "JVSHttpRequstFrameWork.h"
+  export *
+
+  module * { export * }
+}

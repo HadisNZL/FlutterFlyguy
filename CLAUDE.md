@@ -1507,3 +1507,318 @@ if (event.isVideoReady) {
 **A**: 使用 `ValueKey` 保持 Widget 实例稳定，避免 state 变化时重建 AnimationController。
 
 ---
+
+### 14.7 iOS 原生模块接入（Aspen 摄像头实战）
+
+#### 核心架构
+
+```
+AppDelegate (注册入口)
+  ├─ AspenCameraHandler (双向通信)
+  │   ├─ MethodChannel (Flutter → iOS 控制指令)
+  │   └─ EventChannel (iOS → Flutter 事件流)
+  ├─ AspenCameraViewFactory (工厂 + SDK 管理)
+  │   ├─ 初始化 SDK（全局一次）
+  │   └─ 创建 View 实例（每次进入页面）
+  └─ AspenCameraView (播放视图)
+      ├─ KVO 监听播放器状态
+      └─ 发送事件到 Flutter
+```
+
+---
+
+#### 关键文件职责
+
+**1. AppDelegate.swift** - 模块注册
+
+```swift
+func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AspenCameraPlugin")
+    let messenger = registrar.messenger()
+
+    // 创建通信层
+    cameraHandler = AspenCameraHandler(messenger: messenger)
+    cameraHandler?.register()
+
+    // 创建工厂（SDK 在此初始化）
+    let factory = AspenCameraViewFactory(messenger: messenger, eventHandler: cameraHandler!)
+    registrar.register(factory, withId: "camera_view_aspen")
+}
+```
+
+**职责**：注册模块，不关心 SDK 细节。
+
+---
+
+**2. AspenCameraHandler.swift** - 双向通信
+
+```swift
+class AspenCameraHandler: NSObject {
+    private let methodChannel: FlutterMethodChannel  // Flutter → iOS
+    private let eventChannel: FlutterEventChannel    // iOS → Flutter
+    private var eventSink: FlutterEventSink?
+
+    // 注册通道
+    func register() {
+        methodChannel.setMethodCallHandler { [weak self] (call, result) in
+            switch call.method {
+            case "initialize", "play", "snapshot": 
+                // 通过 NotificationCenter 转发到 View
+            }
+        }
+        eventChannel.setStreamHandler(self)
+    }
+
+    // 发送事件（必须主线程）
+    func sendEvent(type: String, event: String, data: [String: Any]? = nil) {
+        DispatchQueue.main.async {
+            self.eventSink?([
+                "type": type,    // "player" / "error"
+                "event": event,  // "connecting" / "video_ready"
+                "data": data ?? [:]
+            ])
+        }
+    }
+}
+```
+
+**职责**：封装双向通信，解耦 View 和 Flutter。
+
+---
+
+**3. AspenCameraViewFactory.swift** - SDK 管理 + 工厂
+
+```swift
+class AspenCameraViewFactory: NSObject, FlutterPlatformViewFactory {
+    private static var isSDKRegistered = false
+    private static let sdkLock = NSLock()
+
+    init(messenger: FlutterBinaryMessenger, eventHandler: AspenCameraHandler) {
+        super.init()
+
+        // ✅ SDK 全局初始化（只执行一次）
+        AspenCameraViewFactory.sdkLock.lock()
+        if !AspenCameraViewFactory.isSDKRegistered {
+            JVSP2PPlayer.registerSDK()  // 初始化解码引擎
+            AspenCameraViewFactory.isSDKRegistered = true
+        }
+        AspenCameraViewFactory.sdkLock.unlock()
+    }
+
+    func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?)
+        -> FlutterPlatformView {
+        return AspenCameraView(frame: frame, viewId: viewId, arguments: args, eventHandler: eventHandler)
+    }
+}
+```
+
+**职责**：初始化 SDK（一次），创建 View（多次）。
+
+---
+
+**4. AspenCameraView** - 播放视图
+
+```swift
+class AspenCameraView: NSObject, FlutterPlatformView {
+    private var player: JVSP2PPlayer?
+    private let eventHandler: AspenCameraHandler
+
+    init(...) {
+        // 延迟 300ms 初始化（避免路由动画卡顿）
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.initializePlayer()
+        }
+    }
+
+    private func initializePlayer() {
+        // 1. 创建播放器（不调用 registerSDK）
+        player = JVSP2PPlayer(view: _view, type: .online)
+
+        // 2. KVO 监听状态
+        player?.addObserver(self, forKeyPath: "videoStatus", ...)
+
+        // 3. 延迟 800ms 连接 P2P
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            self.connectP2P()
+        }
+    }
+
+    // KVO 回调
+    override func observeValue(...) {
+        switch player.videoStatus {
+        case .connecting:
+            eventHandler.sendEvent(type: "player", event: "connecting")
+        case .videoPlaying:
+            eventHandler.sendEvent(type: "player", event: "video_ready")  // ← 关键！
+        }
+    }
+
+    // 清理资源
+    func dispose() {
+        player?.removeObserver(self, forKeyPath: "videoStatus")
+        player?.stopPlayVideo()
+        player?.disconnect()  // ← 只断开连接，不调用 releaseSDK
+        player = nil
+    }
+}
+```
+
+**职责**：管理播放器生命周期，监听状态变化。
+
+---
+
+#### 关键设计决策
+
+##### 1. SDK 只初始化一次
+
+```swift
+// ✅ 正确：Factory.init() 调用一次
+JVSP2PPlayer.registerSDK()
+
+// ❌ 错误：每次进入页面调用
+// 会导致 pthread_mutex_lock 崩溃
+
+// ✅ 永不调用
+// JVSP2PPlayer.releaseSDK()
+```
+
+**原因**：`registerSDK()` 内部初始化解码引擎、创建 mutex、绑定端口。反复 init/deinit 会导致崩溃。
+
+---
+
+##### 2. 不监听 SDKManager 代理
+
+```swift
+// ❌ 错误：不要添加这个代理
+// JVSP2PSDKManager.addDelegate(forTarget: self)
+
+// ✅ 正确：只用 KVO 监听 player.videoStatus
+player?.addObserver(self, forKeyPath: "videoStatus", ...)
+```
+
+**原因**：Player 内部已注册 SDKManager 代理，我们再注册会冲突。Player 会更新 `videoStatus` 属性，我们通过 KVO 监听即可。
+
+---
+
+##### 3. Factory 管理 SDK，不在 AppDelegate
+
+```swift
+// ✅ 好：Factory 管理自己的 SDK
+AspenCameraViewFactory.init() {
+    JVSP2PPlayer.registerSDK()
+}
+
+// ❌ 不好：AppDelegate 知道 Aspen 细节
+AppDelegate.didInitializeImplicitFlutterEngine() {
+    JVSP2PPlayer.registerSDK()  // 耦合
+}
+```
+
+**优势**：多厂商时，各 Factory 管理各自的 SDK，AppDelegate 不需要改。
+
+---
+
+##### 4. 延迟初始化（避免卡顿）
+
+```swift
+init(...) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        self.initializePlayer()  // 避开路由动画 0-300ms
+    }
+}
+
+private func initializePlayer() {
+    player = JVSP2PPlayer(...)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+        self.connectP2P()  // 再延迟 800ms
+    }
+}
+```
+
+**原因**：路由动画占用主线程，延迟初始化避免竞争资源。
+
+---
+
+#### 双向通信完整流程
+
+**Flutter → iOS（控制指令）**
+
+```
+Flutter: await methodChannel.invokeMethod("snapshot")
+  ↓
+MethodChannel → AspenCameraHandler.handleMethodCall()
+  ↓
+NotificationCenter.post(name: "AspenCameraSnapshotRequest")
+  ↓
+AspenCameraView 收到通知
+  ↓
+player?.snapshotImage(atPath: path)
+```
+
+**iOS → Flutter（状态事件）**
+
+```
+SDK: player.videoStatus = .videoPlaying
+  ↓
+KVO 触发 → observeValue()
+  ↓
+eventHandler.sendEvent(type: "player", event: "video_ready")
+  ↓
+EventChannel 推送
+  ↓
+Flutter: Stream<PlayerEvent> 收到事件
+  ↓
+封面淡出，显示视频
+```
+
+---
+
+#### 常见问题
+
+**Q1: 为什么黑屏？**  
+**A**: 删除了 `registerSDK()` 导致解码引擎未初始化。必须在 Factory.init() 中调用一次。
+
+**Q2: 为什么崩溃（pthread_mutex_lock）？**  
+**A**: 反复调用 `registerSDK()` / `releaseSDK()`。应该全局只调用一次 register，永不调用 release。
+
+**Q3: 为什么 video_ready 事件收不到？**  
+**A**: 检查是否添加了 KVO 监听 `player.videoStatus`。不要监听 SDKManager 代理。
+
+**Q4: 为什么进入页面卡顿？**  
+**A**: 没有延迟初始化。应该延迟 300ms 避开路由动画。
+
+**Q5: 多个厂商 SDK 如何管理？**  
+**A**: 每个厂商创建独立 Factory，在各自的 `init()` 中初始化 SDK。AppDelegate 只负责注册，不关心细节。
+
+---
+
+#### 扩展到其他厂商
+
+```swift
+// 海康威视示例
+class HikvisionCameraViewFactory: NSObject, FlutterPlatformViewFactory {
+    private static var isSDKRegistered = false
+    private static let sdkLock = NSLock()
+
+    init(...) {
+        super.init()
+        HikvisionCameraViewFactory.sdkLock.lock()
+        if !HikvisionCameraViewFactory.isSDKRegistered {
+            HKPlayer.registerSDK()  // 海康的 SDK
+            HikvisionCameraViewFactory.isSDKRegistered = true
+        }
+        HikvisionCameraViewFactory.sdkLock.unlock()
+    }
+}
+
+// AppDelegate 注册
+registrar.register(
+    HikvisionCameraViewFactory(...),
+    withId: "camera_view_hikvision"
+)
+
+// Flutter 调用
+UiKitView(viewType: "camera_view_hikvision", ...)
+```
+
+---

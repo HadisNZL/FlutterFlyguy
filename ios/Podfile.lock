@@ -1,8 +1,14 @@
 PODS:
   - Flutter (1.0.0)
+  - Masonry (1.1.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - Masonry
+
+SPEC REPOS:
+  trunk:
+    - Masonry
 
 EXTERNAL SOURCES:
   Flutter:
@@ -10,7 +16,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
 
-PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+PODFILE CHECKSUM: c3cac89e536e3c252c849206ec520f51127f602f
 
 COCOAPODS: 1.16.2

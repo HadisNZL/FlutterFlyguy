@@ -1,0 +1,6 @@
+framework module JVSPlayerSDK {
+  umbrella header "JVSPlayerSDK.h"
+  export *
+
+  module * { export * }
+}

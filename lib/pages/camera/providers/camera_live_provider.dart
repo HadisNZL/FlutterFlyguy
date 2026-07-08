@@ -35,7 +35,7 @@ class CameraLive extends _$CameraLive {
     // 监听 Provider 被销毁时释放资源
     ref.onDispose(() {
       AppLogger.i('CameraLive Provider 被销毁，释放播放器资源', tag: LogTag.api);
-      _eventSubscription?.cancel();  // 取消事件订阅
+      _eventSubscription?.cancel(); // 取消事件订阅
       _player?.dispose();
     });
   }
@@ -106,15 +106,12 @@ class CameraLive extends _$CameraLive {
     if (event.isP2PConnected) {
       // P2P 连接成功
       AppLogger.i('✅ P2P 已连接', tag: LogTag.api);
-
     } else if (event.isPlayerConnecting) {
       // 播放器连接中
       AppLogger.i('🔄 播放器连接中...', tag: LogTag.api);
-
     } else if (event.isPlayerConnected) {
       // 播放器连接成功
       AppLogger.i('✅ 播放器已连接', tag: LogTag.api);
-
     } else if (event.isVideoReady) {
       // 视频准备好了！可以隐藏封面图
       AppLogger.i('🎬 视频已准备好，可以显示画面', tag: LogTag.api);
@@ -126,10 +123,7 @@ class CameraLive extends _$CameraLive {
   /// 处理播放器错误
   void _handlePlayerError(dynamic error) {
     if (error is PlayerException) {
-      AppLogger.e(
-        '播放器错误: ${error.code} - ${error.message}',
-        tag: LogTag.api,
-      );
+      AppLogger.e('播放器错误: ${error.code} - ${error.message}', tag: LogTag.api);
 
       // 根据错误类型处理
       switch (error.code) {
@@ -219,6 +213,9 @@ class CameraLive extends _$CameraLive {
           'p2pInitString': _device!.p2pInitString,
         },
         creationParamsCodec: const StandardMessageCodec(),
+        onPlatformViewCreated: (id) {
+          AppLogger.i('Android 原生视图已创建，ID: $id', tag: LogTag.api);
+        },
       );
     } else if (Platform.isIOS) {
       return UiKitView(
@@ -230,6 +227,9 @@ class CameraLive extends _$CameraLive {
           'p2pInitString': _device!.p2pInitString,
         },
         creationParamsCodec: const StandardMessageCodec(),
+        onPlatformViewCreated: (id) {
+          AppLogger.i('iOS 原生视图已创建，ID: $id', tag: LogTag.api);
+        },
       );
     } else {
       return const Center(child: Text('不支持的平台'));
