@@ -1,5 +1,9 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
   "java.configuration.updateBuildConfiguration": "interactive",
-  "C_Cpp.errorSquiggles": "disabled"
+  "C_Cpp.errorSquiggles": "disabled",
+
+  // 禁用 Kotlin 错误波浪线（VSCode 误报）
+  "kotlin.linting.enabled": false,
+  "kotlin.languageServer.enabled": false
 }
