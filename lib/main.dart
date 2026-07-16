@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'core/constants/api_config.dart';
 import 'core/constants/app_constants.dart';
 import 'core/constants/colors.dart';
 import 'core/exceptions/business_exceptions.dart';
@@ -21,7 +24,12 @@ void main() async {
   // 1. Flutter 初始化
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Hive 初始化
+  // 2. Beta 环境跳过证书验证（测试服务器使用自签名证书）
+  if (ApiConfig.environment == Environment.beta) {
+    HttpOverrides.global = _AllowAllCerts();
+  }
+
+  // 3. Hive 初始化
   await _initHive();
 
   // 3. 预加载核心数据到内存（在 UI 渲染前完成）
@@ -130,5 +138,15 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),
     );
+  }
+}
+
+/// 全局 HTTP 覆盖：跳过 SSL 证书验证
+/// 用于测试环境的自签名证书（适用于 Dio 接口请求 + CachedNetworkImage 图片加载）
+class _AllowAllCerts extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
